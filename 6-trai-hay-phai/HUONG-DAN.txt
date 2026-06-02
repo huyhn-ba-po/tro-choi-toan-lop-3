@@ -1,0 +1,45 @@
+==========================================================
+  TRÒ CHƠI CAMERA: "Trái hay Phải – Hình gì đây?"
+  Toán lớp 3 · Nhận biết hình khối bằng vận động cơ thể
+==========================================================
+
+▶ CÁCH CHƠI CÓ CAMERA (khuyến nghị)
+--------------------------------------------------
+1. Bấm đúp vào file:   start.bat
+2. Một cửa sổ màu đen hiện ra (đó là máy chủ, cứ để yên).
+3. Trình duyệt tự mở trang game. Nếu không, gõ vào trình duyệt:
+        http://localhost:8777/index.html
+4. Bấm nút  "📷 Bật camera & chơi"  → cho phép trình duyệt dùng camera.
+5. Học sinh đứng trước camera:
+        - Nghiêng người sang TRÁI  = chọn ô ĐỎ
+        - Nghiêng người sang PHẢI  = chọn ô XANH
+   Mỗi câu có 6 giây. Bên nào cử động nhiều hơn sẽ được chọn.
+6. Chơi xong: đóng cửa sổ màu đen lại để tắt máy chủ.
+
+▶ KHÔNG CÓ CAMERA / MUỐN TEST NHANH
+--------------------------------------------------
+- Mở start.bat như trên, rồi bấm nút "🖱️ Chơi bằng chuột / phím ←→"
+- Hoặc bấm đúp thẳng vào index.html (chỉ chơi bằng chuột/phím, KHÔNG có camera).
+- Bấm vào ô đỏ/xanh, hoặc dùng phím MŨI TÊN TRÁI / PHẢI.
+
+▶ VÌ SAO PHẢI CHẠY start.bat MỚI DÙNG ĐƯỢC CAMERA?
+--------------------------------------------------
+Trình duyệt chỉ cho phép mở webcam ở "địa chỉ an toàn" (localhost hoặc https).
+Nếu bấm đúp thẳng index.html (địa chỉ file://) thì camera bị chặn — đây là
+quy định bảo mật của trình duyệt, không phải lỗi game.
+start.bat sẽ tạo một "localhost" tạm thời để camera bật được.
+
+▶ CẦN PYTHON
+--------------------------------------------------
+start.bat dùng Python (đa số máy đã có sẵn). Nếu báo thiếu Python:
+   Tải miễn phí: https://www.python.org/downloads/
+   Khi cài, NHỚ tích chọn "Add Python to PATH".
+
+▶ MẸO DÙNG TRONG LỚP
+--------------------------------------------------
+- Đặt laptop/camera cách lớp 2–3m, góc rộng để thấy cả thân người.
+- Cho cả lớp cùng nghiêng một chiều: camera đo "bên nào đông cử động hơn".
+- Ánh sáng đủ, phía sau không có người qua lại để camera đỡ nhiễu.
+- Nếu lớp chưa có camera tốt: phát thẻ ĐỎ/XANH, học sinh giơ thẻ; giáo viên
+  bấm chuột/phím chọn giúp (đúng tinh thần "thẻ màu dự phòng" trong tài liệu).
+==========================================================

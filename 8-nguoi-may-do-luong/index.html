@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Người máy đo lường · Toán lớp 3</title>
+<style>
+  :root{
+    --bg1:#0c0a1f; --bg2:#1e1b4b; --card:#ffffff;
+    --true:#22c55e; --trued:#15803d; --false:#ef4444; --falsed:#b91c1c;
+    --ink:#1f2937; --muted:#6b7280; --gold:#f59e0b;
+    --shadow:0 18px 40px rgba(0,0,0,.32); --r:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Segoe UI",-apple-system,system-ui,Arial,sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 700px at 15% -10%,#3730a3 0%,transparent 60%),
+               radial-gradient(900px 600px at 100% 0%,#0891b2 0%,transparent 55%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100%;display:flex;align-items:center;justify-content:center;padding:14px;overflow-x:hidden}
+  .stage{width:min(1000px,100%);background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;position:relative}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;
+    background:linear-gradient(90deg,#1e1b4b,#0891b2);color:#fff}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand .badge{font-size:1.4rem}
+  .topbar .right{display:flex;align-items:center;gap:12px;font-weight:700;flex-wrap:wrap}
+  .pill{background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:.92rem}.pill b{color:#fde68a}
+  .iconbtn{background:rgba(255,255,255,.16);border:0;color:#fff;cursor:pointer;width:36px;height:36px;border-radius:50%;font-size:1rem;display:grid;place-items:center}
+  .iconbtn:hover{background:rgba(255,255,255,.3)}
+
+  .screen{padding:22px 22px 28px;display:none;animation:fade .35s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{text-align:center;padding:6px}
+  .hero .big{font-size:3.8rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .hero h1{font-size:2rem;color:var(--bg2);margin:6px 0 2px}
+  .hero .sub{color:var(--muted);font-size:1rem;margin-bottom:14px}
+  .howto{text-align:left;background:#f8fafc;border:2px dashed #e2e8f0;border-radius:16px;padding:16px 18px;max-width:640px;margin:0 auto 14px}
+  .howto h3{color:var(--bg2);margin-bottom:8px}.howto li{margin:6px 0;color:#374151;line-height:1.5}
+  .demo{display:flex;gap:14px;justify-content:center;margin:6px auto 14px;flex-wrap:wrap}
+  .demo .d{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:12px 18px;text-align:center;font-weight:700}
+  .demo .d.t{border-color:var(--true);color:var(--trued)} .demo .d.f{border-color:var(--false);color:var(--falsed)}
+  .demo .d .e{font-size:2rem;display:block}
+  .warn{background:#fffbeb;border:2px solid #fcd34d;color:#92400e;border-radius:14px;padding:12px 14px;max-width:640px;margin:0 auto 14px;font-size:.95rem;line-height:1.5;display:none}
+  .warn.show{display:block}
+
+  .btn{border:0;cursor:pointer;font-family:inherit;font-weight:800;padding:15px 28px;border-radius:15px;font-size:1.1rem;color:#fff;
+    background:linear-gradient(180deg,#818cf8,#4f46e5);box-shadow:0 8px 0 #3730a3,0 12px 22px rgba(0,0,0,.18);transition:transform .08s,box-shadow .08s}
+  .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #3730a3}
+  .btn.gold{background:linear-gradient(180deg,#fbbf24,#f59e0b);box-shadow:0 8px 0 #b45309,0 12px 22px rgba(0,0,0,.18)}
+  .btn.gold:active{box-shadow:0 3px 0 #b45309}
+  .btn.ghost{background:#f1f5f9;color:#334155;box-shadow:0 6px 0 #cbd5e1}.btn.ghost:active{box-shadow:0 2px 0 #cbd5e1}
+  .btnrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+  .qtop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .tag{background:#1e1b4b;color:#fde68a;font-weight:800;padding:6px 13px;border-radius:11px}
+  .timer{font-weight:900;font-size:1.3rem;color:#1e1b4b}
+  .timerbar{height:14px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-bottom:14px}
+  .timerbar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#fde047,#ef4444);transition:width .1s linear}
+
+  .robot{text-align:center;margin-bottom:6px;font-size:1rem;color:#4f46e5;font-weight:700}
+  .cmd{background:linear-gradient(180deg,#eef2ff,#e0e7ff);border:3px solid #c7d2fe;border-radius:16px;padding:22px 16px;text-align:center;margin-bottom:14px}
+  .cmd .lead{font-size:.95rem;color:#4f46e5;font-weight:700;letter-spacing:1px}
+  .cmd .q{font-size:1.9rem;font-weight:900;color:#1e1b4b;margin-top:6px;line-height:1.3}
+
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .choice{border-radius:18px;padding:20px 12px;text-align:center;color:#fff;font-weight:900;font-size:1.5rem;cursor:pointer;position:relative;border:4px solid transparent;transition:.15s;user-select:none}
+  .choice .dir{display:block;font-size:1rem;font-weight:700;opacity:.9;margin-bottom:4px}
+  .choice.left{background:linear-gradient(180deg,#4ade80,#16a34a)}
+  .choice.right{background:linear-gradient(180deg,#f87171,#dc2626)}
+  .choice:hover{transform:translateY(-3px)}
+  .choice.lead{border-color:#fff;box-shadow:0 0 0 5px rgba(245,158,11,.6)}
+  .choice.correct{outline:5px solid #fde047}
+  .choice.wrong{opacity:.45;filter:grayscale(.4)}
+  .fillbar{position:absolute;left:0;bottom:0;height:6px;background:rgba(255,255,255,.85);width:0%;border-radius:0 0 14px 14px;transition:width .12s}
+
+  .campanel{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+  .camwrap{position:relative;width:200px;height:150px;border-radius:14px;overflow:hidden;background:#0f172a;border:3px solid #334155;flex:none}
+  .camwrap video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+  .camwrap .divider{position:absolute;top:0;bottom:0;left:50%;width:2px;background:rgba(255,255,255,.55)}
+  .camwrap .lbl{position:absolute;top:4px;font-size:.7rem;font-weight:800;color:#fff;text-shadow:0 1px 2px #000;padding:2px 6px;border-radius:6px}
+  .camwrap .lblL{left:6px;background:rgba(22,163,74,.75)} .camwrap .lblR{right:6px;background:rgba(220,38,38,.75)}
+  .camwrap .off{position:absolute;inset:0;display:grid;place-items:center;color:#94a3b8;font-size:.85rem;text-align:center;padding:10px}
+  .motionbars{display:flex;flex-direction:column;gap:8px;min-width:180px}
+  .mrow{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.9rem}
+  .mrow .bar{flex:1;height:16px;background:#e2e8f0;border-radius:999px;overflow:hidden}.mrow .bar>i{display:block;height:100%;width:0%}
+  .mrow.l .bar>i{background:var(--true)} .mrow.r .bar>i{background:var(--false)}
+
+  .feedback{margin-top:12px;min-height:28px;text-align:center;font-weight:800;font-size:1.15rem}
+  .feedback.ok{color:var(--trued)}.feedback.no{color:var(--falsed)}
+  .explain{text-align:center;color:#4f46e5;font-weight:700;min-height:22px}
+  .actions{margin-top:8px;text-align:center}
+
+  .endwrap{text-align:center;padding:14px 6px}
+  .endwrap .big{font-size:4.6rem;animation:bob 2.4s ease-in-out infinite}
+  .endwrap h1{color:var(--bg2);font-size:1.9rem;margin:6px 0}
+  .stars{font-size:2.3rem;letter-spacing:6px}
+  .scorebig{font-size:2.6rem;font-weight:900;color:var(--gold);margin:6px 0}
+  .endmsg{color:#374151;font-size:1.1rem;margin-bottom:16px}
+  .confetti{position:fixed;top:-10px;width:10px;height:16px;opacity:.9;z-index:50;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <div class="brand"><span class="badge">🤖</span> Người máy đo lường</div>
+    <div class="right">
+      <span class="pill" id="qStat">Lệnh <b>0/10</b></span>
+      <span class="pill">Điểm <b id="scoreStat">0</b></span>
+      <button class="iconbtn" id="muteBtn" title="Bật/tắt âm thanh">🔊</button>
+    </div>
+  </div>
+
+  <!-- START -->
+  <section class="screen active" id="startScreen">
+    <div class="hero">
+      <div class="big">🤖</div>
+      <h1>Người máy đo lường</h1>
+      <p class="sub">Toán lớp 3 · So sánh &amp; đổi đơn vị đo bằng vận động</p>
+    </div>
+    <div class="howto">
+      <h3>🦾 Em là người máy thông minh!</h3>
+      <ul style="padding-left:20px">
+        <li>Trạm điều khiển gửi một <b>phép so sánh</b> (ví dụ: 5 km &gt; 4900 m).</li>
+        <li><b>Lắc người sang TRÁI</b> nếu em thấy <b>ĐÚNG</b>, <b>sang PHẢI</b> nếu <b>SAI</b>.</li>
+        <li>Camera đo bên nào em lắc nhiều hơn. Mỗi lệnh có <b>5 giây</b>!</li>
+        <li>Giữ tư thế người máy thật ngầu nhé! 🤖</li>
+      </ul>
+    </div>
+    <div class="demo">
+      <div class="d t"><span class="e">👈</span>Lắc TRÁI<br>= ĐÚNG</div>
+      <div class="d f"><span class="e">👉</span>Lắc PHẢI<br>= SAI</div>
+    </div>
+    <div class="warn" id="warn"></div>
+    <div class="btnrow">
+      <button class="btn" id="camBtn">📷 Bật camera &amp; chơi</button>
+      <button class="btn ghost" id="noCamBtn">🖱️ Chơi bằng chuột / phím ←→</button>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="gameScreen">
+    <div class="qtop"><span class="tag" id="qTag">LỆNH 1</span><span class="timer" id="timer">⏱️ 5</span></div>
+    <div class="timerbar"><i id="timerFill"></i></div>
+
+    <div class="robot" id="robotTopic">🔧 Trạm kiểm soát đang gửi lệnh...</div>
+    <div class="cmd"><span class="lead">⚙️ LỆNH SO SÁNH</span><div class="q" id="question"></div></div>
+
+    <div class="choices">
+      <div class="choice left" id="choiceL" data-side="left">
+        <span class="dir">👈 Lắc TRÁI</span>ĐÚNG ✔<div class="fillbar" id="fillL"></div>
+      </div>
+      <div class="choice right" id="choiceR" data-side="right">
+        <span class="dir">Lắc PHẢI 👉</span>SAI ✘<div class="fillbar" id="fillR"></div>
+      </div>
+    </div>
+
+    <div class="campanel">
+      <div class="camwrap">
+        <video id="video" autoplay playsinline muted></video>
+        <div class="divider"></div>
+        <span class="lbl lblL">ĐÚNG</span><span class="lbl lblR">SAI</span>
+        <div class="off" id="camOff">Chế độ không camera —<br>bấm vào ô hoặc phím ←/→</div>
+      </div>
+      <div class="motionbars">
+        <div class="mrow l"><span>👈</span><div class="bar"><i id="barL"></i></div></div>
+        <div class="mrow r"><span>👉</span><div class="bar"><i id="barR"></i></div></div>
+        <small style="color:#64748b">Thanh nào dài hơn = bên đó cử động nhiều hơn</small>
+      </div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div class="explain" id="explain"></div>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="endScreen">
+    <div class="endwrap">
+      <div class="big" id="bigEnd">🏆</div>
+      <h1 id="endTitle">Kết thúc nhiệm vụ!</h1>
+      <div class="stars" id="stars">⭐⭐⭐</div>
+      <div class="scorebig"><span id="finalScore">0</span> / 10 lệnh đúng</div>
+      <p class="endmsg" id="endMsg"></p>
+      <button class="btn gold" id="replayBtn">Chơi lại 🔄</button>
+    </div>
+  </section>
+</div>
+<canvas id="work" width="160" height="120" style="display:none"></canvas>
+
+<script>
+/* ===== NGÂN HÀNG LỆNH SO SÁNH (Đúng/Sai) ===== */
+/* truth=true => phép so sánh ĐÚNG */
+const BANK=[
+  {t:"Độ dài",   q:"1 m > 90 cm",        truth:true,  e:"1 m = 100 cm, mà 100 > 90 nên ĐÚNG."},
+  {t:"Độ dài",   q:"1 dm = 100 cm",      truth:false, e:"1 dm = 10 cm (không phải 100), nên SAI."},
+  {t:"Độ dài",   q:"5 km > 4900 m",      truth:true,  e:"5 km = 5000 m, mà 5000 > 4900 nên ĐÚNG."},
+  {t:"Độ dài",   q:"2 m < 150 cm",       truth:false, e:"2 m = 200 cm, mà 200 > 150 nên SAI."},
+  {t:"Độ dài",   q:"3 dm = 30 cm",       truth:true,  e:"3 dm = 3 × 10 = 30 cm nên ĐÚNG."},
+  {t:"Độ dài",   q:"1 cm = 10 mm",       truth:true,  e:"1 cm = 10 mm nên ĐÚNG."},
+  {t:"Khối lượng",q:"1 kg > 900 g",      truth:true,  e:"1 kg = 1000 g, mà 1000 > 900 nên ĐÚNG."},
+  {t:"Khối lượng",q:"2 kg = 200 g",      truth:false, e:"2 kg = 2000 g (không phải 200), nên SAI."},
+  {t:"Khối lượng",q:"3 kg > 2500 g",     truth:true,  e:"3 kg = 3000 g, mà 3000 > 2500 nên ĐÚNG."},
+  {t:"Khối lượng",q:"500 g > 1 kg",      truth:false, e:"1 kg = 1000 g, mà 500 < 1000 nên SAI."},
+  {t:"Dung tích", q:"1 l = 1000 ml",     truth:true,  e:"1 l = 1000 ml nên ĐÚNG."},
+  {t:"Dung tích", q:"2 l < 1500 ml",     truth:false, e:"2 l = 2000 ml, mà 2000 > 1500 nên SAI."},
+  {t:"Dung tích", q:"3 l > 2900 ml",     truth:true,  e:"3 l = 3000 ml, mà 3000 > 2900 nên ĐÚNG."},
+  {t:"Dung tích", q:"1 l = 100 ml",      truth:false, e:"1 l = 1000 ml (không phải 100), nên SAI."}
+];
+
+const TOTAL=10, TIME=5;
+let quiz=[], idx=0, score=0, locked=false, soundOn=true, useCam=false;
+let countdown=null, timeLeft=TIME, curQ=null, leftAcc=0, rightAcc=0, sampling=false;
+
+let actx=null;
+function beep(f,d=.12,t="sine",v=.18){if(!soundOn)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();
+  const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+  g.gain.setValueAtTime(v,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d);}catch(e){}}
+const sndOK=()=>{beep(660,.12);setTimeout(()=>beep(990,.16),100)};
+const sndNo=()=>{beep(200,.22,"square",.12)};
+const sndTick=()=>{beep(760,.04,"triangle",.08)};
+const sndLock=()=>{beep(440,.1,"square",.1)};
+const sndBoot=()=>{beep(330,.08,"square",.1);setTimeout(()=>beep(523,.1,"square",.1),90)};
+
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
+let seed=55;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ===== CAMERA (2 vùng trái/phải) ===== */
+const video=$("video"), work=$("work"), octx=work.getContext('2d',{willReadFrequently:true});
+const CW=160,CH=120; let prev=null,raf=null;
+async function startCamera(){
+  if(location.protocol==='file:'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    showWarn("⚠️ Không mở được camera khi mở trực tiếp file. Hãy chạy bằng <b>start.bat</b> rồi bấm lại, hoặc chơi bằng chuột/phím."); return false;
+  }
+  try{
+    const s=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:"user"},audio:false});
+    video.srcObject=s; await video.play(); useCam=true; $("camOff").style.display="none"; loopDetect(); return true;
+  }catch(e){ showWarn("⚠️ Không bật được camera ("+(e.name||e)+"). Em chơi bằng chuột hoặc phím ←/→ nhé."); return false; }
+}
+function showWarn(h){const w=$("warn");w.innerHTML=h;w.classList.add('show');}
+function loopDetect(){
+  if(video.readyState>=2){
+    octx.save();octx.translate(CW,0);octx.scale(-1,1);octx.drawImage(video,0,0,CW,CH);octx.restore();
+    const img=octx.getImageData(0,0,CW,CH).data;
+    if(prev){
+      let l=0,r=0;
+      for(let y=0;y<CH;y+=2)for(let x=0;x<CW;x+=2){const i=(y*CW+x)*4;
+        if(Math.abs((img[i]+img[i+1]+img[i+2])-(prev[i]+prev[i+1]+prev[i+2]))>70){if(x<CW/2)l++;else r++;}}
+      const tot=Math.max(1,l+r);
+      $("barL").style.width=Math.min(100,l/tot*100)+"%";$("barR").style.width=Math.min(100,r/tot*100)+"%";
+      if(sampling){leftAcc+=l;rightAcc+=r;updateLead();}
+    }
+    prev=img;
+  }
+  raf=requestAnimationFrame(loopDetect);
+}
+function updateLead(){
+  const tot=Math.max(1,leftAcc+rightAcc);
+  $("fillL").style.width=Math.min(100,leftAcc/tot*100)+"%";$("fillR").style.width=Math.min(100,rightAcc/tot*100)+"%";
+  $("choiceL").classList.toggle('lead',leftAcc>rightAcc&&leftAcc>30);
+  $("choiceR").classList.toggle('lead',rightAcc>leftAcc&&rightAcc>30);
+}
+
+/* ===== GAME ===== */
+function begin(c){ if(c){startCamera().then(()=>runStart());} else {useCam=false;runStart();} }
+function runStart(){ seed=(seed*7+3)%233280+1; quiz=shuffle(BANK).slice(0,TOTAL); idx=0;score=0; renderQ(); show('gameScreen'); }
+
+function renderQ(){
+  clearInterval(countdown); curQ=quiz[idx]; locked=false; leftAcc=0; rightAcc=0; sampling=true;
+  $("qTag").textContent="LỆNH "+(idx+1);
+  $("qStat").innerHTML=`Lệnh <b>${idx+1}/${TOTAL}</b>`; $("scoreStat").textContent=score;
+  $("robotTopic").textContent="🔧 Chủ đề: "+curQ.t;
+  $("question").textContent=curQ.q+"  →  Đúng hay Sai?";
+  // ĐÚNG luôn ở TRÁI (theo quy ước 3.6.8). correctSide = truth? 'left':'right'
+  curQ._correctSide = curQ.truth ? 'left' : 'right';
+  ["choiceL","choiceR"].forEach(id=>$(id).classList.remove('lead','correct','wrong'));
+  $("fillL").style.width="0%";$("fillR").style.width="0%";
+  $("feedback").textContent="";$("feedback").className="feedback";$("explain").textContent="";$("actions").innerHTML="";
+  sndBoot();
+  timeLeft=TIME;updateTimer();
+  countdown=setInterval(()=>{timeLeft-=0.1;
+    if(timeLeft<=3&&Math.abs(timeLeft-Math.round(timeLeft))<0.05)sndTick();
+    updateTimer(); if(timeLeft<=0){clearInterval(countdown);lockAnswer();}},100);
+}
+function updateTimer(){$("timer").textContent="⏱️ "+Math.max(0,Math.ceil(timeLeft));$("timerFill").style.width=Math.max(0,timeLeft/TIME*100)+"%";}
+function manualPick(side){if(locked)return;clearInterval(countdown);decide(side);}
+function lockAnswer(){
+  if(locked)return; sampling=false; sndLock();
+  let side=null;
+  if(useCam){ if(leftAcc<25&&rightAcc<25)side=null; else side=leftAcc>=rightAcc?'left':'right'; }
+  decide(side);
+}
+function decide(side){
+  locked=true;sampling=false;
+  const correct=curQ._correctSide;
+  $("choice"+(correct==='left'?'L':'R')).classList.add('correct');
+  if(side===correct){score++;sndOK();confetti(14);$("feedback").className="feedback ok";$("feedback").textContent="🎉 Người máy chính xác! +1 điểm";}
+  else{sndNo();if(side)$("choice"+(side==='left'?'L':'R')).classList.add('wrong');
+    $("feedback").className="feedback no";
+    $("feedback").textContent=side?"🤖 Sai rồi! Ô đúng đã sáng vàng.":"⏰ Hết giờ! Lần sau lắc dứt khoát hơn nhé.";}
+  $("explain").textContent="💡 "+curQ.e;
+  $("scoreStat").textContent=score;
+  const last=idx===TOTAL-1;
+  $("actions").innerHTML=`<button class="btn gold" id="nextBtn">${last?'Xem kết quả 🏁':'Lệnh tiếp theo ▶'}</button>`;
+  $("nextBtn").onclick=()=>{idx++;if(idx>=TOTAL)endGame();else renderQ();};
+}
+function endGame(){
+  $("finalScore").textContent=score;
+  const pct=score/TOTAL;let stars,big,msg,title;
+  if(pct>=0.9){stars="⭐⭐⭐";big="🏆";title="SIÊU NGƯỜI MÁY ĐO LƯỜNG!";msg="Em so sánh và đổi đơn vị cực chuẩn!";}
+  else if(pct>=0.6){stars="⭐⭐";big="🥈";title="Người máy giỏi!";msg="Tốt lắm, chỉ cần luyện thêm chút nữa thôi.";}
+  else{stars="⭐";big="🥉";title="Hoàn thành nhiệm vụ!";msg="Nhớ lại bảng đổi đơn vị rồi chơi lại nhé!";}
+  $("stars").textContent=stars;$("bigEnd").textContent=big;$("endTitle").textContent=title;$("endMsg").textContent=msg;
+  show('endScreen');if(pct>=0.6)burst();
+}
+const COLORS=["#22c55e","#ef4444","#6366f1","#f59e0b","#0891b2","#fde047"];
+function confetti(n=20){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='confetti';
+  d.style.left=Math.random()*100+'vw';d.style.background=COLORS[i%COLORS.length];d.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+  document.body.appendChild(d);setTimeout(()=>d.remove(),3200);}}
+function burst(){let t=0;const iv=setInterval(()=>{confetti(20);if(++t>4)clearInterval(iv);},350);}
+
+$("camBtn").onclick=()=>begin(true);
+$("noCamBtn").onclick=()=>begin(false);
+$("replayBtn").onclick=runStart;
+$("muteBtn").onclick=()=>{soundOn=!soundOn;$("muteBtn").textContent=soundOn?"🔊":"🔇";};
+$("choiceL").onclick=()=>manualPick('left');
+$("choiceR").onclick=()=>manualPick('right');
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')manualPick('left');if(e.key==='ArrowRight')manualPick('right');});
+if(location.protocol==='file:'){showWarn("ℹ️ Đang mở trực tiếp file nên <b>camera sẽ không bật được</b>. Dùng <b>start.bat</b> để bật camera. Vẫn chơi được bằng chuột / phím ←/→.");}
+</script>
+</body>
+</html>

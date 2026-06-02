@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Xây nhà hình học — Toán lớp 3</title>
+<style>
+  :root{
+    --bg1:#7c2d12; --bg2:#9a3412; --card:#ffffff;
+    --accent:#0ea5e9; --accent2:#38bdf8;
+    --green:#22c55e; --red:#ef4444;
+    --ink:#1f2937; --muted:#6b7280;
+    --shadow:0 18px 40px rgba(0,0,0,.28); --r:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Segoe UI",-apple-system,system-ui,Arial,sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 700px at 15% -10%,#f59e0b 0%,transparent 60%),
+               radial-gradient(900px 600px at 100% 0%,#ea580c 0%,transparent 55%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100%;display:flex;align-items:center;justify-content:center;padding:18px;overflow-x:hidden}
+  .stage{width:min(960px,100%);background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;position:relative}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;
+    background:linear-gradient(90deg,#7c2d12,#b45309);color:#fff}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand .badge{font-size:1.5rem}
+  .topbar .right{display:flex;align-items:center;gap:14px;font-weight:700}
+  .pill{background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:.95rem}.pill b{color:#fde68a}
+  .iconbtn{background:rgba(255,255,255,.16);border:0;color:#fff;cursor:pointer;width:38px;height:38px;border-radius:50%;font-size:1.1rem;display:grid;place-items:center}
+  .iconbtn:hover{background:rgba(255,255,255,.3)}
+
+  .screen{padding:26px 24px 30px;display:none;animation:fade .35s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{text-align:center;padding:10px 6px}
+  .hero .big{font-size:4.4rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .hero h1{font-size:2.3rem;color:var(--bg1);margin:6px 0 4px}
+  .hero .sub{color:var(--muted);font-size:1.05rem;margin-bottom:18px}
+  .howto{text-align:left;background:#fff7ed;border:2px dashed #fed7aa;border-radius:18px;padding:18px 20px;max-width:640px;margin:0 auto 18px}
+  .howto h3{color:var(--bg2);margin-bottom:10px}.howto li{margin:7px 0;color:#374151;line-height:1.5}
+
+  .formula{background:#ecfeff;border:2px solid #a5f3fc;border-radius:16px;padding:14px 16px;max-width:640px;margin:0 auto 22px}
+  .formula h4{color:#0e7490;margin-bottom:8px}
+  .formula .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .formula .f{background:#fff;border:2px solid #67e8f9;border-radius:12px;padding:8px 12px;font-weight:700;color:#0e7490}
+
+  .btn{border:0;cursor:pointer;font-family:inherit;font-weight:800;padding:16px 30px;border-radius:16px;font-size:1.15rem;color:#fff;
+    background:linear-gradient(180deg,var(--accent2),var(--accent));box-shadow:0 8px 0 #0369a1,0 12px 22px rgba(0,0,0,.18);transition:transform .08s,box-shadow .08s}
+  .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #0369a1}
+  .btn.orange{background:linear-gradient(180deg,#fb923c,#ea580c);box-shadow:0 8px 0 #c2410c,0 12px 22px rgba(0,0,0,.18)}
+  .btn.orange:active{box-shadow:0 3px 0 #c2410c}
+
+  .case-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:6px}
+  .tag{background:#7c2d12;color:#fde68a;font-weight:800;padding:7px 14px;border-radius:12px}
+  .progress{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex:1;min-width:160px}
+  .progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#fb923c,#22c55e);transition:width .5s}
+  .stagename{color:var(--bg1);font-size:1.25rem;font-weight:800;margin:10px 0 14px}
+
+  .grid{display:grid;grid-template-columns:1fr 1.1fr;gap:22px;align-items:start}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+  /* house build area */
+  .house{background:linear-gradient(180deg,#e0f2fe,#bae6fd);border-radius:16px;min-height:300px;position:relative;border:2px solid #7dd3fc;overflow:hidden}
+  .ground{position:absolute;bottom:0;left:0;right:0;height:46px;background:linear-gradient(180deg,#86efac,#4ade80)}
+  .part{position:absolute;opacity:0;transform:translateY(18px) scale(.9);transition:.6s cubic-bezier(.34,1.56,.64,1)}
+  .part.in{opacity:1;transform:none}
+  .floor{bottom:46px;left:50%;margin-left:-90px;width:180px;height:18px;background:#a16207;border-radius:4px}
+  .walls{bottom:64px;left:50%;margin-left:-80px;width:160px;height:110px;background:linear-gradient(180deg,#fcd34d,#fbbf24);border:3px solid #b45309;border-radius:6px}
+  .roof{bottom:174px;left:50%;margin-left:-104px;width:0;height:0;border-left:104px solid transparent;border-right:104px solid transparent;border-bottom:64px solid #dc2626}
+  .window{bottom:120px;left:50%;margin-left:-52px;width:42px;height:42px;background:#bae6fd;border:4px solid #fff;border-radius:4px;box-shadow:inset 0 0 0 2px #38bdf8}
+  .door{bottom:64px;left:50%;margin-left:14px;width:38px;height:62px;background:#7c2d12;border:3px solid #fff;border-radius:6px 6px 0 0}
+  .smoke{font-size:1.6rem;bottom:230px;left:50%;margin-left:40px}
+
+  /* shape figure */
+  .figure{background:#fff;border:2px solid #e5e7eb;border-radius:14px;padding:14px;text-align:center;margin-bottom:12px}
+  .fig-svg{width:100%;max-width:300px}
+
+  .qbox h3{color:var(--bg2);font-size:1.15rem;margin-bottom:8px}
+  .task{background:#fff7ed;border-left:8px solid var(--accent);border:2px solid #bae6fd;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:1.08rem;line-height:1.5}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{border:2px solid #bae6fd;background:#fff;border-radius:14px;padding:14px;cursor:pointer;font-weight:800;font-size:1.05rem;color:#075985;transition:.12s}
+  .opt:hover:not(:disabled){background:#f0f9ff;transform:translateY(-2px)}
+  .opt:disabled{cursor:default}
+  .opt.correct{background:#dcfce7;border-color:var(--green);color:#166534}
+  .opt.wrong{background:#fee2e2;border-color:var(--red);color:#991b1b}
+  .feedback{margin-top:14px;min-height:30px;text-align:center;font-weight:800;font-size:1.1rem}
+  .feedback.ok{color:var(--green)}.feedback.no{color:#b45309}
+  .hint{margin-top:8px;text-align:center;color:#0e7490;font-weight:700;min-height:24px}
+  .actions{margin-top:14px;text-align:center}
+
+  .endwrap{text-align:center;padding:18px 6px}
+  .endwrap .big{font-size:5rem;animation:bob 2.4s ease-in-out infinite}
+  .endwrap h1{color:var(--bg1);font-size:2.1rem;margin:6px 0}
+  .stars{font-size:2.4rem;letter-spacing:6px}
+  .scorebig{font-size:3rem;font-weight:900;color:var(--accent);margin:8px 0}
+  .endmsg{color:#374151;font-size:1.15rem;margin-bottom:18px}
+  .confetti{position:fixed;top:-10px;width:10px;height:16px;opacity:.9;z-index:50;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <div class="brand"><span class="badge">🏗️</span> Xây nhà hình học</div>
+    <div class="right">
+      <span class="pill" id="stStat">Giai đoạn <b>0/5</b></span>
+      <span class="pill">Điểm <b id="scoreStat">0</b></span>
+      <button class="iconbtn" id="muteBtn" title="Bật/tắt âm thanh">🔊</button>
+    </div>
+  </div>
+
+  <!-- START -->
+  <section class="screen active" id="startScreen">
+    <div class="hero">
+      <div class="big">👷</div>
+      <h1>Xây nhà hình học</h1>
+      <p class="sub">Toán lớp 3 · Chu vi &amp; diện tích hình chữ nhật, hình vuông</p>
+    </div>
+    <div class="howto">
+      <h3>🧱 Em là bác thợ xây nhí!</h3>
+      <ul style="padding-left:20px">
+        <li>Ngôi nhà được xây qua <b>5 giai đoạn</b>: nền, tường, cửa sổ, mái…</li>
+        <li>Mỗi giai đoạn, em hãy <b>tính chu vi hoặc diện tích</b> để chọn đúng vật liệu.</li>
+        <li>Chọn đúng, ngôi nhà sẽ <b>mọc lên thêm một phần</b> thật đẹp! 🏠</li>
+        <li>Em có thước kẻ và giấy nháp bên cạnh để tính nhé!</li>
+      </ul>
+    </div>
+    <div class="formula">
+      <h4>📐 Bảng công thức cho bác thợ (luôn hiện trong lúc chơi)</h4>
+      <div class="row">
+        <span class="f">Chu vi chữ nhật = (dài + rộng) × 2</span>
+        <span class="f">Diện tích chữ nhật = dài × rộng</span>
+        <span class="f">Chu vi hình vuông = cạnh × 4</span>
+        <span class="f">Diện tích hình vuông = cạnh × cạnh</span>
+      </div>
+    </div>
+    <div style="text-align:center"><button class="btn orange" id="startBtn">Bắt đầu xây nhà 🔨</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="gameScreen">
+    <div class="case-head">
+      <span class="tag" id="stTag">GIAI ĐOẠN 1</span>
+      <div class="progress"><i id="progBar"></i></div>
+    </div>
+    <div class="stagename" id="stageName">Đổ nền nhà</div>
+
+    <div class="grid">
+      <div class="house" id="house">
+        <div class="ground"></div>
+      </div>
+      <div class="qbox">
+        <div class="figure" id="figure"></div>
+        <div class="task" id="task"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="hint" id="hint"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="endScreen">
+    <div class="endwrap">
+      <div class="big" id="bigEnd">🏡</div>
+      <h1>Ngôi nhà hoàn thành!</h1>
+      <div class="stars" id="stars">⭐⭐⭐</div>
+      <div class="scorebig"><span id="finalScore">0</span> / 10 điểm</div>
+      <p class="endmsg" id="endMsg"></p>
+      <button class="btn orange" id="replayBtn">Xây nhà mới 🔄</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===== 5 GIAI ĐOẠN ===== */
+/* type: 'rect' or 'square'; calc: 'area' or 'peri' */
+const STAGES = [
+  { name:"Đổ nền nhà 🟫", type:"rect", a:6, b:4, calc:"area", unit:"m²",
+    task:"Bác thợ cần lát thảm cho NỀN NHÀ hình chữ nhật dài 6m, rộng 4m. Em hãy tính DIỆN TÍCH nền để mua đúng tấm thảm nhé!",
+    part:"floor", hint:"Diện tích = dài × rộng = 6 × 4" },
+  { name:"Xây hàng rào 🚧", type:"square", a:5, calc:"peri", unit:"m",
+    task:"Sân trước nhà là hình vuông cạnh 5m. Em hãy tính CHU VI để mua đủ rào quây quanh sân nhé!",
+    part:"walls", hint:"Chu vi hình vuông = cạnh × 4 = 5 × 4" },
+  { name:"Lắp cửa sổ 🪟", type:"square", a:2, calc:"area", unit:"m²",
+    task:"Cửa sổ là hình vuông cạnh 2m. Em hãy tính DIỆN TÍCH để cắt tấm kính vừa khít!",
+    part:"window", hint:"Diện tích hình vuông = cạnh × cạnh = 2 × 2" },
+  { name:"Lắp cửa ra vào 🚪", type:"rect", a:1, b:2, calc:"peri", unit:"m",
+    task:"Cửa ra vào hình chữ nhật dài 2m, rộng 1m. Em hãy tính CHU VI để đóng khung viền cửa nhé!",
+    part:"door", hint:"Chu vi = (dài + rộng) × 2 = (2 + 1) × 2" },
+  { name:"Lợp mái nhà 🔺", type:"rect", a:8, b:3, calc:"area", unit:"m²",
+    task:"Mái nhà hình chữ nhật dài 8m, rộng 3m. Em hãy tính DIỆN TÍCH để mua đủ ngói lợp mái!",
+    part:"roof", hint:"Diện tích = dài × rộng = 8 × 3" }
+];
+
+let idx=0, score=0, tries=0, locked=false, soundOn=true;
+let actx=null;
+function beep(f,d=.12,t="sine",v=.18){if(!soundOn)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();
+  const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+  g.gain.setValueAtTime(v,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d);}catch(e){}}
+const sndOK=()=>{beep(660,.12);setTimeout(()=>beep(880,.16),110);setTimeout(()=>beep(1175,.2),240)};
+const sndBuild=()=>{beep(300,.1,"square",.12);setTimeout(()=>beep(420,.12,"square",.1),120)};
+const sndNo=()=>{beep(200,.22,"square",.12)};
+
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
+let seed=13;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function answerOf(s){
+  if(s.type==="square") return s.calc==="area"? s.a*s.a : s.a*4;
+  return s.calc==="area"? s.a*s.b : (s.a+s.b)*2;
+}
+
+/* vẽ hình chữ nhật/vuông kèm số đo */
+function figureSVG(s){
+  const W=260,H=150;
+  let w,h;
+  if(s.type==="square"){w=120;h=120;}
+  else {w=180;h=110;}
+  const x=(W-w)/2,y=(H-h)/2;
+  const fill = s.calc==="area"?"#bae6fd":"#fff";
+  let labels=`<text x="${W/2}" y="${y-8}" text-anchor="middle" font-size="15" font-weight="800" fill="#075985">${s.type==="square"?(s.a+"m"):(s.a+"m")}</text>`;
+  labels+=`<text x="${x-8}" y="${H/2}" text-anchor="end" font-size="15" font-weight="800" fill="#075985">${s.type==="square"?(s.a+"m"):(s.b+"m")}</text>`;
+  return `<svg class="fig-svg" viewBox="0 0 ${W} ${H}">
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#0ea5e9" stroke-width="3" rx="4"/>
+    ${labels}
+  </svg>`;
+}
+
+function startGame(){
+  idx=0;score=0;
+  // reset house
+  $("house").querySelectorAll('.part').forEach(p=>p.remove());
+  renderStage();show('gameScreen');
+}
+
+function addPart(part){
+  const map={
+    floor:'<div class="part floor"></div>',
+    walls:'<div class="part walls"></div>',
+    window:'<div class="part window"></div>',
+    door:'<div class="part door"></div>',
+    roof:'<div class="part roof"></div>'
+  };
+  $("house").insertAdjacentHTML('beforeend',map[part]);
+  const el=$("house").lastElementChild;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));
+}
+
+function renderStage(){
+  const s=STAGES[idx];tries=0;locked=false;
+  $("stTag").textContent="GIAI ĐOẠN "+(idx+1);
+  $("stageName").textContent=s.name;
+  $("progBar").style.width=(idx/5*100)+"%";
+  $("scoreStat").textContent=score;
+  $("stStat").innerHTML=`Giai đoạn <b>${Math.min(idx,5)}/5</b>`;
+  $("figure").innerHTML=figureSVG(s);
+  $("task").textContent=s.task;
+
+  const ans=answerOf(s);
+  // distractors: common mistakes
+  let wrongs=new Set();
+  if(s.type==="square"){ wrongs.add(s.a*s.a); wrongs.add(s.a*4); wrongs.add(s.a*2); wrongs.add(s.a+s.a); }
+  else { wrongs.add(s.a*s.b); wrongs.add((s.a+s.b)*2); wrongs.add(s.a+s.b); wrongs.add(s.a*2+s.b); }
+  wrongs.delete(ans);
+  let opts=[ans].concat(shuffle([...wrongs]).slice(0,3));
+  while(opts.length<4){const x=ans+ (opts.length); if(!opts.includes(x))opts.push(x);}
+  opts=shuffle(opts);
+  const box=$("options");box.innerHTML="";
+  opts.forEach(v=>{const b=document.createElement('button');b.className='opt';b.textContent=v+" "+s.unit;b.onclick=()=>guess(v,b);box.appendChild(b);});
+
+  $("feedback").textContent="";$("feedback").className="feedback";
+  $("hint").textContent="";$("actions").innerHTML="";
+}
+
+function guess(v,btn){
+  if(locked)return;
+  const s=STAGES[idx],ans=answerOf(s);
+  if(v===ans){
+    locked=true;const pts=tries===0?2:1;score+=pts;sndOK();
+    btn.classList.add('correct');document.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+    $("scoreStat").textContent=score;
+    $("feedback").className="feedback ok";
+    $("feedback").textContent=`🎉 Chuẩn luôn! +${pts} điểm. ${s.hint} = ${ans} ${s.unit}`;
+    addPart(s.part);sndBuild();
+    nextBtn();
+  }else{
+    btn.classList.add('wrong');btn.disabled=true;tries++;sndNo();
+    $("feedback").className="feedback no";
+    $("feedback").textContent="🤗 Ơ chưa đúng rồi! Bác thợ thử tính lại nhé.";
+    $("hint").textContent="💡 Gợi ý: "+s.hint+" = ?";
+  }
+}
+
+function nextBtn(){
+  $("progBar").style.width=((idx+1)/5*100)+"%";
+  const last=idx===STAGES.length-1;
+  $("actions").innerHTML=`<button class="btn orange" id="nextBtn">${last?'Khánh thành nhà 🎊':'Xây tiếp ▶'}</button>`;
+  $("nextBtn").onclick=()=>{idx++;if(idx>=STAGES.length)endGame();else renderStage();};
+}
+
+function endGame(){
+  $("finalScore").textContent=score;
+  const pct=score/10;let stars,big,msg;
+  if(pct>=0.9){stars="⭐⭐⭐";big="🏡";msg="Ngôi nhà đẹp nhất làng! Bác thợ giỏi quá!";}
+  else if(pct>=0.6){stars="⭐⭐";big="🏠";msg="Hoan hô! Ngôi nhà đã xây xong rồi.";}
+  else{stars="⭐";big="🛖";msg="Cố lên nhé! Ôn lại công thức chu vi, diện tích rồi xây lại nào!";}
+  $("stars").textContent=stars;$("bigEnd").textContent=big;$("endMsg").textContent=msg;
+  show('endScreen');if(pct>=0.6)burst();
+}
+
+const COLORS=["#0ea5e9","#22c55e","#f59e0b","#ef4444","#a855f7","#fde047"];
+function confetti(n=22){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='confetti';
+  d.style.left=Math.random()*100+'vw';d.style.background=COLORS[i%COLORS.length];
+  d.style.animationDuration=(1.6+Math.random()*1.4)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3200);}}
+function burst(){let t=0;const iv=setInterval(()=>{confetti(20);if(++t>4)clearInterval(iv);},350);}
+
+$("startBtn").onclick=startGame;$("replayBtn").onclick=startGame;
+$("muteBtn").onclick=()=>{soundOn=!soundOn;$("muteBtn").textContent=soundOn?"🔊":"🔇";};
+</script>
+</body>
+</html>

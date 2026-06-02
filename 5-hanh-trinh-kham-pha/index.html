@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hành trình khám phá hình học — Toán lớp 3</title>
+<style>
+  :root{
+    --bg1:#0c4a6e; --bg2:#155e75; --card:#ffffff;
+    --accent:#14b8a6; --accent2:#2dd4bf;
+    --green:#22c55e; --red:#ef4444; --gold:#f59e0b;
+    --ink:#1f2937; --muted:#6b7280;
+    --shadow:0 18px 40px rgba(0,0,0,.28); --r:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:"Segoe UI",-apple-system,system-ui,Arial,sans-serif;color:var(--ink);
+    background:radial-gradient(1200px 700px at 20% -10%,#0ea5e9 0%,transparent 60%),
+               radial-gradient(900px 600px at 100% 0%,#14b8a6 0%,transparent 55%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100%;display:flex;align-items:center;justify-content:center;padding:18px;overflow-x:hidden}
+  .stage{width:min(960px,100%);background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;position:relative}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px;
+    background:linear-gradient(90deg,#0c4a6e,#0f766e);color:#fff}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800}.brand .badge{font-size:1.5rem}
+  .topbar .right{display:flex;align-items:center;gap:14px;font-weight:700}
+  .pill{background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:.95rem}.pill b{color:#fde68a}
+  .iconbtn{background:rgba(255,255,255,.16);border:0;color:#fff;cursor:pointer;width:38px;height:38px;border-radius:50%;font-size:1.1rem;display:grid;place-items:center}
+  .iconbtn:hover{background:rgba(255,255,255,.3)}
+
+  .screen{padding:26px 24px 30px;display:none;animation:fade .35s ease}.screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .hero{text-align:center;padding:10px 6px}
+  .hero .big{font-size:4.4rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  .hero h1{font-size:2.2rem;color:var(--bg1);margin:6px 0 4px}
+  .hero .sub{color:var(--muted);font-size:1.05rem;margin-bottom:18px}
+  .howto{text-align:left;background:#f0fdfa;border:2px dashed #99f6e4;border-radius:18px;padding:18px 20px;max-width:660px;margin:0 auto 22px}
+  .howto h3{color:var(--bg2);margin-bottom:10px}.howto li{margin:7px 0;color:#374151;line-height:1.5}
+
+  .btn{border:0;cursor:pointer;font-family:inherit;font-weight:800;padding:16px 30px;border-radius:16px;font-size:1.15rem;color:#fff;
+    background:linear-gradient(180deg,var(--accent2),var(--accent));box-shadow:0 8px 0 #0f766e,0 12px 22px rgba(0,0,0,.18);transition:transform .08s,box-shadow .08s}
+  .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #0f766e}
+  .btn.gold{background:linear-gradient(180deg,#fbbf24,#f59e0b);box-shadow:0 8px 0 #b45309,0 12px 22px rgba(0,0,0,.18)}
+  .btn.gold:active{box-shadow:0 3px 0 #b45309}
+  .btn.small{padding:10px 18px;font-size:.98rem;box-shadow:0 5px 0 #b45309}
+  .btn.small:active{box-shadow:0 2px 0 #b45309}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+
+  /* MAP */
+  .map{background:linear-gradient(180deg,#cffafe,#a5f3fc);border-radius:16px;border:2px solid #67e8f9;padding:14px;margin-bottom:14px;position:relative}
+  .nodes{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+  .node{width:64px;height:64px;border-radius:18px;background:#fff;border:3px solid #5eead4;display:grid;place-items:center;font-size:1.7rem;position:relative;transition:.3s}
+  .node small{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.72rem;font-weight:700;color:#0f766e}
+  .node.done{background:#dcfce7;border-color:var(--green)}
+  .node.now{border-color:var(--gold);box-shadow:0 0 0 4px rgba(245,158,11,.35);transform:scale(1.12)}
+  .node .lock{position:absolute;top:-8px;right:-8px;font-size:1rem}
+  .path{position:absolute;left:46px;right:46px;top:46px;height:4px;background:repeating-linear-gradient(90deg,#0891b2 0 10px,transparent 10px 20px);z-index:1}
+  .walker{position:absolute;top:8px;left:46px;font-size:2rem;z-index:3;transition:left .6s cubic-bezier(.34,1.56,.64,1)}
+
+  /* puzzle bag */
+  .bag{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
+  .bag .label{font-weight:700;color:#0f766e}
+  .piece{width:46px;height:46px;border-radius:10px;background:#e0f2fe;border:2px dashed #7dd3fc;display:grid;place-items:center;font-size:1.4rem;color:#94a3b8}
+  .piece.got{background:#fef3c7;border:2px solid var(--gold);color:inherit;animation:pop .4s}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+  .case-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+  .tag{background:#0c4a6e;color:#fde68a;font-weight:800;padding:7px 14px;border-radius:12px}
+  .dest-title{color:var(--bg1);font-weight:800;font-size:1.2rem}
+
+  .story{background:#f0fdfa;border-left:8px solid var(--accent);border:2px solid #99f6e4;border-radius:12px;padding:14px 16px;margin-bottom:8px;font-size:1.1rem;line-height:1.55}
+  .story .q{font-weight:800;color:#134e4a;margin-top:6px;display:block}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  @media(max-width:430px){.options{grid-template-columns:1fr}}
+  .opt{border:2px solid #99f6e4;background:#fff;border-radius:14px;padding:15px;cursor:pointer;font-weight:800;font-size:1.05rem;color:#115e59;transition:.12s}
+  .opt:hover:not(:disabled){background:#f0fdfa;transform:translateY(-2px)}
+  .opt:disabled{cursor:default}
+  .opt.correct{background:#dcfce7;border-color:var(--green);color:#166534}
+  .opt.wrong{background:#fee2e2;border-color:var(--red);color:#991b1b}
+
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap}
+  .feedback{min-height:26px;font-weight:800;font-size:1.05rem;text-align:center;flex:1}
+  .feedback.ok{color:var(--green)}.feedback.no{color:#b45309}
+  .hint{margin-top:8px;text-align:center;color:#0f766e;font-weight:700;min-height:22px}
+  .actions{margin-top:12px;text-align:center}
+
+  .endwrap{text-align:center;padding:14px 6px}
+  .endwrap h1{color:var(--bg1);font-size:2rem;margin:6px 0}
+  .bigpuzzle{display:flex;gap:8px;justify-content:center;margin:14px 0;flex-wrap:wrap}
+  .bigpuzzle .p{width:60px;height:60px;border-radius:12px;background:#fef3c7;border:2px solid var(--gold);display:grid;place-items:center;font-size:1.9rem}
+  .secret{background:linear-gradient(180deg,#fffbeb,#fef3c7);border:3px solid #fcd34d;border-radius:16px;padding:18px;margin:14px auto;max-width:560px;font-size:1.3rem;font-weight:800;color:#92400e}
+  .stars{font-size:2.4rem;letter-spacing:6px}
+  .scorebig{font-size:2.6rem;font-weight:900;color:var(--accent);margin:6px 0}
+  .endmsg{color:#374151;font-size:1.1rem;margin-bottom:16px}
+  .confetti{position:fixed;top:-10px;width:10px;height:16px;opacity:.9;z-index:50;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <div class="brand"><span class="badge">🗺️</span> Hành trình khám phá hình học</div>
+    <div class="right">
+      <span class="pill" id="destStat">Điểm đến <b>0/5</b></span>
+      <span class="pill">Điểm <b id="scoreStat">0</b></span>
+      <button class="iconbtn" id="muteBtn" title="Bật/tắt âm thanh">🔊</button>
+    </div>
+  </div>
+
+  <!-- START -->
+  <section class="screen active" id="startScreen">
+    <div class="hero">
+      <div class="big">🧭</div>
+      <h1>Hành trình khám phá hình học</h1>
+      <p class="sub">Toán lớp 3 · Ôn tập tổng hợp Hình học &amp; Đo lường</p>
+    </div>
+    <div class="howto">
+      <h3>🏝️ Cuộc phiêu lưu tìm kho báu</h3>
+      <ul style="padding-left:20px">
+        <li>Trên bản đồ có <b>5 điểm đến</b>, mỗi nơi là một chủ đề toán đã học.</li>
+        <li>Mỗi nơi có một <b>câu đố vui</b>. Em trả lời đúng để <b>mở khóa</b> đường đi tiếp.</li>
+        <li>Mỗi câu đúng, em nhận được <b>1 mảnh ghép bí ẩn</b> 🧩.</li>
+        <li>Ghép đủ 5 mảnh, em sẽ <b>tìm ra kho báu và lời nhắn bí mật</b>!</li>
+        <li>Bí quá, em được dùng <b>2 thẻ gợi ý</b> nhé. 😉</li>
+      </ul>
+    </div>
+    <div style="text-align:center"><button class="btn" id="startBtn">Bắt đầu phiêu lưu 🚀</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="gameScreen">
+    <div class="map">
+      <div class="path"></div>
+      <span class="walker" id="walker">🧭</span>
+      <div class="nodes" id="nodes"></div>
+    </div>
+    <div class="bag">
+      <span class="label">🎒 Túi mảnh ghép:</span>
+      <div id="bag"></div>
+    </div>
+
+    <div class="case-head">
+      <span class="tag" id="destTag">ĐIỂM ĐẾN 1</span>
+      <span class="dest-title" id="destTitle"></span>
+    </div>
+
+    <div class="story" id="story"></div>
+    <div class="options" id="options"></div>
+
+    <div class="toolbar">
+      <button class="btn gold small" id="hintBtn">💡 Dùng thẻ gợi ý (còn 2)</button>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="hint" id="hint"></div>
+    <div class="actions" id="actions"></div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="endScreen">
+    <div class="endwrap">
+      <h1>🎉 Tìm thấy kho báu rồi!</h1>
+      <div class="bigpuzzle" id="bigPuzzle"></div>
+      <div class="secret" id="secretMsg"></div>
+      <div class="stars" id="stars">⭐⭐⭐</div>
+      <div class="scorebig"><span id="finalScore">0</span> / 10 điểm</div>
+      <p class="endmsg" id="endMsg"></p>
+      <button class="btn gold" id="replayBtn">Phiêu lưu lại 🔄</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ===== 5 ĐIỂM ĐẾN ===== */
+const DESTS = [
+  { icon:"🧊", label:"Hình khối", title:"Xưởng mộc của chú Ba",
+    story:"Chú thợ mộc đóng một chiếc hộp quà hình <b>KHỐI LẬP PHƯƠNG</b> để tặng em.",
+    q:"Hỏi chiếc hộp đó có tất cả mấy mặt?",
+    a:"6 mặt", o:["6 mặt","4 mặt","8 mặt","12 mặt"],
+    hint:"Khối lập phương và khối hộp chữ nhật đều có 6 mặt, 8 đỉnh, 12 cạnh.",
+    piece:"🗺️" },
+  { icon:"⬜", label:"Hình phẳng", title:"Khu vườn của bà",
+    story:"Bà có một mảnh vườn hình <b>CHỮ NHẬT</b> dài 8m, rộng 5m. Bà muốn rào quanh vườn.",
+    q:"Em hãy tính CHU VI mảnh vườn giúp bà nhé!",
+    a:"26 m", o:["26 m","40 m","13 m","18 m"],
+    hint:"Chu vi hình chữ nhật = (dài + rộng) × 2 = (8 + 5) × 2.",
+    piece:"🧭" },
+  { icon:"⏰", label:"Xem đồng hồ", title:"Giờ tan học của Lan",
+    story:"Bạn Lan tan học lúc đồng hồ chỉ <b>4 giờ 30 phút</b> chiều.",
+    q:"Khi đó kim dài (kim phút) chỉ vào số mấy?",
+    a:"Số 6", o:["Số 6","Số 12","Số 3","Số 9"],
+    hint:"30 phút = nửa giờ, kim phút chỉ vào số 6.",
+    piece:"🌴" },
+  { icon:"📏", label:"Đo độ dài", title:"Đường tới trường của Nam",
+    story:"Quãng đường từ nhà bạn Nam đến trường dài <b>2 km</b>.",
+    q:"Quãng đường đó dài bao nhiêu mét?",
+    a:"2000 m", o:["2000 m","200 m","20 m","1000 m"],
+    hint:"1 km = 1000 m, nên 2 km = 2 × 1000 m.",
+    piece:"💎" },
+  { icon:"⚖️", label:"Đo khối lượng – dung tích", title:"Đi chợ cùng mẹ",
+    story:"Mẹ mua một chai nước to ghi <b>2 lít</b>.",
+    q:"Chai nước đó chứa bao nhiêu mi-li-lít (ml)?",
+    a:"2000 ml", o:["2000 ml","200 ml","20 ml","1000 ml"],
+    hint:"1 l = 1000 ml, nên 2 l = 2 × 1000 ml.",
+    piece:"🦜" }
+];
+
+const SECRET = "KHO BÁU LỚN NHẤT CHÍNH LÀ KIẾN THỨC TOÁN HỌC CỦA EM! 🏆";
+
+let idx=0, score=0, tries=0, hintsLeft=2, usedHintThis=false, locked=false, soundOn=true;
+let collected=[];
+
+let actx=null;
+function beep(f,d=.12,t="sine",v=.18){if(!soundOn)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();
+  const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+  g.gain.setValueAtTime(v,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.start();o.stop(actx.currentTime+d);}catch(e){}}
+const sndOK=()=>{beep(660,.12);setTimeout(()=>beep(880,.16),110);setTimeout(()=>beep(1175,.2),240)};
+const sndPiece=()=>{beep(784,.1);setTimeout(()=>beep(1047,.14),110)};
+const sndNo=()=>{beep(200,.22,"square",.12)};
+const sndWin=()=>{[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.2),i*150))};
+
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
+let seed=33;function rnd(){seed=(seed*9301+49297)%233280;return seed/233280;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startGame(){
+  idx=0;score=0;hintsLeft=2;collected=[];
+  buildMap();buildBag();renderDest();show('gameScreen');
+}
+
+function buildMap(){
+  const n=$("nodes");n.innerHTML="";
+  DESTS.forEach((d,i)=>{
+    n.insertAdjacentHTML('beforeend',
+      `<div class="node" id="node${i}">${d.icon}<small>${d.label}</small>${i>0?'<span class="lock">🔒</span>':''}</div>`);
+  });
+}
+function buildBag(){
+  const b=$("bag");b.innerHTML="";
+  DESTS.forEach((d,i)=>b.insertAdjacentHTML('beforeend',`<div class="piece" id="piece${i}">?</div>`));
+}
+function moveWalker(){
+  const pct = idx/(DESTS.length-1);
+  $("walker").style.left=`calc(46px + (100% - 92px - 64px) * ${pct})`;
+  DESTS.forEach((d,i)=>{
+    const el=$("node"+i);el.classList.remove('now','done');
+    const lock=el.querySelector('.lock');
+    if(i<idx){el.classList.add('done');if(lock)lock.textContent='✅';}
+    if(i===idx){el.classList.add('now');if(lock)lock.remove();}
+  });
+}
+
+function renderDest(){
+  const d=DESTS[idx];tries=0;usedHintThis=false;locked=false;
+  $("destTag").textContent="ĐIỂM ĐẾN "+(idx+1);
+  $("destTitle").textContent=d.icon+" "+d.title;
+  $("destStat").innerHTML=`Điểm đến <b>${Math.min(idx,5)}/5</b>`;
+  $("scoreStat").textContent=score;
+  moveWalker();
+
+  $("story").innerHTML=`${d.story}<span class="q">❓ ${d.q}</span>`;
+  const box=$("options");box.innerHTML="";
+  shuffle(d.o).forEach(v=>{const b=document.createElement('button');b.className='opt';b.textContent=v;b.onclick=()=>guess(v,b);box.appendChild(b);});
+
+  $("feedback").textContent="";$("feedback").className="feedback";
+  $("hint").textContent="";$("actions").innerHTML="";
+  $("hintBtn").textContent=`💡 Dùng thẻ gợi ý (còn ${hintsLeft})`;
+  $("hintBtn").disabled = hintsLeft<=0;
+  $("hintBtn").style.display="";
+}
+
+function useHint(){
+  if(hintsLeft<=0||locked)return;
+  hintsLeft--;usedHintThis=true;
+  $("hint").textContent="💡 "+DESTS[idx].hint;
+  $("hintBtn").textContent=`💡 Dùng thẻ gợi ý (còn ${hintsLeft})`;
+  $("hintBtn").disabled=hintsLeft<=0;
+}
+
+function guess(v,btn){
+  if(locked)return;
+  const d=DESTS[idx];
+  if(v===d.a){
+    locked=true;
+    const pts=(tries===0 && !usedHintThis)?2:1;
+    score+=pts;sndOK();
+    btn.classList.add('correct');
+    document.querySelectorAll('.opt').forEach(o=>o.disabled=true);
+    $("hintBtn").style.display="none";
+    $("scoreStat").textContent=score;
+    // nhận mảnh ghép
+    collected.push(d.piece);
+    const pc=$("piece"+idx);pc.textContent=d.piece;pc.classList.add('got');
+    sndPiece();confetti(14);
+    $("feedback").className="feedback ok";
+    $("feedback").textContent=`🎉 Đúng rồi! +${pts} điểm — Em nhận được mảnh ghép ${d.piece}`;
+    nextBtn();
+  }else{
+    btn.classList.add('wrong');btn.disabled=true;tries++;sndNo();
+    $("feedback").className="feedback no";
+    $("feedback").textContent="🤗 Chưa đúng, em suy nghĩ thêm hoặc dùng thẻ gợi ý nhé!";
+  }
+}
+
+function nextBtn(){
+  const last=idx===DESTS.length-1;
+  $("actions").innerHTML=`<button class="btn gold" id="nextBtn">${last?'Mở kho báu 🎁':'Đi tới điểm tiếp theo ▶'}</button>`;
+  $("nextBtn").onclick=()=>{idx++;if(idx>=DESTS.length)endGame();else renderDest();};
+}
+
+function endGame(){
+  moveWalker();
+  $("finalScore").textContent=score;
+  const bp=$("bigPuzzle");bp.innerHTML="";
+  collected.forEach(p=>bp.insertAdjacentHTML('beforeend',`<div class="p">${p}</div>`));
+  $("secretMsg").textContent="🔑 Lời nhắn bí mật: "+SECRET;
+  const pct=score/10;let stars,msg;
+  if(pct>=0.9){stars="⭐⭐⭐";msg="Nhà thám hiểm toán học tài ba! Em giỏi tất cả các chủ đề!";}
+  else if(pct>=0.6){stars="⭐⭐";msg="Tuyệt vời! Em đã hoàn thành cả hành trình.";}
+  else{stars="⭐";msg="Hoan hô em đã về đích! Ôn lại vài chủ đề rồi phiêu lưu lại nhé!";}
+  $("stars").textContent=stars;$("endMsg").textContent=msg;
+  show('endScreen');sndWin();burst();
+}
+
+const COLORS=["#14b8a6","#0ea5e9","#22c55e","#f59e0b","#a855f7","#fde047"];
+function confetti(n=22){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='confetti';
+  d.style.left=Math.random()*100+'vw';d.style.background=COLORS[i%COLORS.length];
+  d.style.animationDuration=(1.6+Math.random()*1.4)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3200);}}
+function burst(){let t=0;const iv=setInterval(()=>{confetti(24);if(++t>5)clearInterval(iv);},300);}
+
+$("startBtn").onclick=startGame;$("replayBtn").onclick=startGame;
+$("hintBtn").onclick=useHint;
+$("muteBtn").onclick=()=>{soundOn=!soundOn;$("muteBtn").textContent=soundOn?"🔊":"🔇";};
+</script>
+</body>
+</html>

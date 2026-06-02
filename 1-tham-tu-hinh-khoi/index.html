@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thám tử hình khối — Toán lớp 3</title>
+<style>
+  :root{
+    --bg1:#1e1b4b; --bg2:#312e81; --card:#ffffff;
+    --accent:#f59e0b; --accent2:#fbbf24;
+    --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+    --ink:#1f2937; --muted:#6b7280;
+    --shadow:0 18px 40px rgba(0,0,0,.28);
+    --r:22px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Segoe UI",-apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1200px 700px at 20% -10%,#4338ca 0%,transparent 60%),
+               radial-gradient(900px 600px at 100% 0%,#7c3aed 0%,transparent 55%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    min-height:100%;
+    display:flex;align-items:center;justify-content:center;
+    padding:18px;
+    overflow-x:hidden;
+  }
+  .stage{
+    width:min(960px,100%);
+    background:var(--card);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 20px;
+    background:linear-gradient(90deg,#111827,#312e81);
+    color:#fff;
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.3px}
+  .brand .badge{font-size:1.5rem}
+  .topbar .right{display:flex;align-items:center;gap:14px;font-weight:700}
+  .pill{background:rgba(255,255,255,.14);padding:6px 12px;border-radius:999px;font-size:.95rem}
+  .pill b{color:var(--accent2)}
+  .iconbtn{
+    background:rgba(255,255,255,.14);border:0;color:#fff;cursor:pointer;
+    width:38px;height:38px;border-radius:50%;font-size:1.1rem;display:grid;place-items:center;
+    transition:.15s;
+  }
+  .iconbtn:hover{background:rgba(255,255,255,.28)}
+
+  /* ---------- SCREENS ---------- */
+  .screen{padding:28px 26px 30px;display:none;animation:fade .35s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ----- START ----- */
+  .hero{text-align:center;padding:14px 6px}
+  .hero .glass{font-size:4.4rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-10px) rotate(6deg)}}
+  .hero h1{font-size:2.3rem;color:var(--bg1);margin:6px 0 4px}
+  .hero .sub{color:var(--muted);font-size:1.05rem;margin-bottom:18px}
+  .howto{
+    text-align:left;background:#f9fafb;border:2px dashed #e5e7eb;border-radius:18px;
+    padding:18px 20px;max-width:620px;margin:0 auto 22px;
+  }
+  .howto h3{color:var(--bg2);margin-bottom:10px;font-size:1.05rem}
+  .howto li{margin:7px 0;color:#374151;line-height:1.5}
+  .scoring{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+  .chip{background:#fff;border:2px solid #fde68a;border-radius:14px;padding:8px 14px;font-weight:700;color:#92400e}
+  .chip b{color:#b45309}
+
+  /* ----- BUTTONS ----- */
+  .btn{
+    border:0;cursor:pointer;font-family:inherit;font-weight:800;
+    padding:16px 30px;border-radius:16px;font-size:1.15rem;color:#fff;
+    background:linear-gradient(180deg,var(--accent2),var(--accent));
+    box-shadow:0 8px 0 #b45309,0 12px 22px rgba(0,0,0,.18);
+    transition:transform .08s, box-shadow .08s;
+  }
+  .btn:active{transform:translateY(5px);box-shadow:0 3px 0 #b45309}
+  .btn.blue{background:linear-gradient(180deg,#60a5fa,#2563eb);box-shadow:0 8px 0 #1d4ed8,0 12px 22px rgba(0,0,0,.18)}
+  .btn.blue:active{box-shadow:0 3px 0 #1d4ed8}
+  .btn.ghost{background:#f3f4f6;color:#374151;box-shadow:0 6px 0 #d1d5db}
+  .btn.ghost:active{box-shadow:0 2px 0 #d1d5db}
+
+  /* ---------- GAME LAYOUT ---------- */
+  .case-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+  .case-no{display:flex;align-items:center;gap:10px}
+  .case-no .tag{background:#111827;color:#fde68a;font-weight:800;padding:7px 14px;border-radius:12px;letter-spacing:.5px}
+  .case-no h2{color:var(--bg1);font-size:1.35rem}
+  .progress{height:12px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex:1;min-width:160px}
+  .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,#f59e0b,#22c55e);transition:width .5s}
+
+  .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:start}
+  @media(max-width:720px){.grid{grid-template-columns:1fr}}
+
+  /* shape stage */
+  .scene{
+    background:radial-gradient(120% 120% at 50% 0%,#eef2ff,#e0e7ff);
+    border-radius:18px;min-height:300px;display:grid;place-items:center;position:relative;
+    overflow:hidden;border:2px solid #c7d2fe;
+  }
+  .secret{font-size:8rem;color:#a5b4fc;animation:pulse 1.6s infinite;text-shadow:0 6px 18px rgba(99,102,241,.4)}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  .scanline{position:absolute;left:0;right:0;height:34%;top:0;
+    background:linear-gradient(180deg,rgba(99,102,241,.18),transparent);
+    animation:scan 2.6s linear infinite}
+  @keyframes scan{0%{top:-34%}100%{top:100%}}
+
+  /* CSS 3D shapes (revealed) */
+  .shapeWrap{perspective:700px;display:grid;place-items:center;width:100%;height:100%}
+  .objlist{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-size:1.7rem;letter-spacing:6px}
+  .reveal-name{position:absolute;top:12px;left:0;right:0;text-align:center;font-weight:800;color:var(--bg2);font-size:1.1rem}
+
+  .cube,.box{transform-style:preserve-3d;animation:spin 9s linear infinite;position:relative}
+  @keyframes spin{from{transform:rotateX(-22deg) rotateY(0)}to{transform:rotateX(-22deg) rotateY(360deg)}}
+  .face{position:absolute;border:2px solid rgba(0,0,0,.18)}
+  /* cube 120px */
+  .cube{width:120px;height:120px}
+  .cube .face{width:120px;height:120px;background:linear-gradient(135deg,#fb923c,#f59e0b);opacity:.95}
+  .cube .f1{transform:translateZ(60px)} .cube .f2{transform:rotateY(180deg) translateZ(60px)}
+  .cube .f3{transform:rotateY(90deg) translateZ(60px)} .cube .f4{transform:rotateY(-90deg) translateZ(60px)}
+  .cube .f5{transform:rotateX(90deg) translateZ(60px)} .cube .f6{transform:rotateX(-90deg) translateZ(60px)}
+  /* box 150x100x80 */
+  .box{width:150px;height:100px}
+  .box .face{background:linear-gradient(135deg,#60a5fa,#2563eb);opacity:.95}
+  .box .b1{width:150px;height:100px;transform:translateZ(40px)}
+  .box .b2{width:150px;height:100px;transform:rotateY(180deg) translateZ(40px)}
+  .box .b3{width:80px;height:100px;left:35px;transform:rotateY(90deg) translateZ(75px)}
+  .box .b4{width:80px;height:100px;left:35px;transform:rotateY(-90deg) translateZ(75px)}
+  .box .b5{width:150px;height:80px;top:10px;transform:rotateX(90deg) translateZ(50px)}
+  .box .b6{width:150px;height:80px;top:10px;transform:rotateX(-90deg) translateZ(50px)}
+  /* sphere */
+  .sphere{width:140px;height:140px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%,#fff,#34d399 40%,#059669 100%);
+    box-shadow:inset -14px -16px 30px rgba(0,0,0,.25);animation:roll 5s linear infinite}
+  @keyframes roll{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  /* cylinder */
+  .cyl{width:110px;height:150px;position:relative;animation:spin 9s linear infinite;transform-style:preserve-3d}
+  .cyl .body{position:absolute;inset:0;border-radius:18px/14px;
+    background:linear-gradient(90deg,#a78bfa,#7c3aed,#a78bfa)}
+  .cyl .top{position:absolute;top:-9px;left:0;width:110px;height:26px;border-radius:50%;
+    background:#c4b5fd;border:2px solid #6d28d9}
+
+  /* clues */
+  .panel h3{color:var(--bg2);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .clue{
+    background:#fff7ed;border:2px solid #fed7aa;border-left:8px solid var(--accent);
+    border-radius:14px;padding:13px 15px;margin-bottom:10px;font-size:1.08rem;line-height:1.5;
+    animation:slidein .35s ease;display:flex;gap:10px;align-items:flex-start;
+  }
+  .clue.hidden{display:none}
+  .clue .n{background:var(--accent);color:#fff;font-weight:800;border-radius:8px;padding:2px 9px;flex:none}
+  @keyframes slidein{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  @media(max-width:420px){.options{grid-template-columns:1fr}}
+  .opt{
+    border:2px solid #c7d2fe;background:#fff;border-radius:14px;padding:14px;cursor:pointer;
+    font-weight:700;font-size:1.05rem;color:#1e3a8a;transition:.12s;text-align:center;
+  }
+  .opt:hover:not(:disabled){background:#eef2ff;transform:translateY(-2px)}
+  .opt:disabled{cursor:default}
+  .opt.correct{background:#dcfce7;border-color:var(--green);color:#166534}
+  .opt.wrong{background:#fee2e2;border-color:var(--red);color:#991b1b}
+
+  .feedback{margin-top:14px;min-height:30px;text-align:center;font-weight:800;font-size:1.15rem}
+  .feedback.ok{color:var(--green)} .feedback.near{color:#d97706} .feedback.no{color:var(--red)}
+  .actions{margin-top:16px;text-align:center}
+
+  .pts{font-weight:800;color:#b45309}
+  .miniscore{margin-top:8px;text-align:center;color:var(--muted);font-size:.95rem}
+
+  /* end screen */
+  .endwrap{text-align:center;padding:18px 6px}
+  .endwrap .trophy{font-size:5rem;animation:bob 2.4s ease-in-out infinite}
+  .endwrap h1{color:var(--bg1);font-size:2.1rem;margin:6px 0}
+  .stars{font-size:2.4rem;letter-spacing:6px;margin:6px 0}
+  .scorebig{font-size:3rem;font-weight:900;color:var(--accent);margin:8px 0}
+  .endmsg{color:#374151;font-size:1.15rem;margin-bottom:18px}
+
+  /* confetti */
+  .confetti{position:fixed;top:-10px;width:10px;height:16px;opacity:.9;z-index:50;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:1}}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="topbar">
+    <div class="brand"><span class="badge">🔎</span> Thám tử hình khối</div>
+    <div class="right">
+      <span class="pill" id="caseStat">Hồ sơ <b>0/5</b></span>
+      <span class="pill">Điểm <b id="scoreStat">0</b></span>
+      <button class="iconbtn" id="muteBtn" title="Bật/tắt âm thanh">🔊</button>
+    </div>
+  </div>
+
+  <!-- START -->
+  <section class="screen active" id="startScreen">
+    <div class="hero">
+      <div class="glass">🔍</div>
+      <h1>Thám tử hình khối</h1>
+      <p class="sub">Toán lớp 3 · Khối hộp chữ nhật &amp; Khối lập phương</p>
+    </div>
+    <div class="howto">
+      <h3>🕵️ Nhiệm vụ của thám tử nhí</h3>
+      <ul style="padding-left:20px">
+        <li>Có <b>5 hồ sơ bí ẩn</b>, mỗi hồ sơ giấu một <b>hình khối</b>.</li>
+        <li>Mỗi hồ sơ có <b>3 gợi ý</b>, mở dần từ khó đoán đến dễ đoán.</li>
+        <li>Đoán càng sớm, điểm càng cao!</li>
+      </ul>
+      <div class="scoring">
+        <span class="chip">Gợi ý 1 → <b>3 điểm</b></span>
+        <span class="chip">Gợi ý 2 → <b>2 điểm</b></span>
+        <span class="chip">Gợi ý 3 → <b>1 điểm</b></span>
+      </div>
+    </div>
+    <div style="text-align:center"><button class="btn" id="startBtn">Bắt đầu điều tra 🚀</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="gameScreen">
+    <div class="case-head">
+      <div class="case-no">
+        <span class="tag" id="caseTag">HỒ SƠ #1</span>
+        <h2 id="caseTitle">Bí ẩn hình khối</h2>
+      </div>
+      <div class="progress"><i id="progBar"></i></div>
+    </div>
+
+    <div class="grid">
+      <div class="scene" id="scene">
+        <div class="scanline"></div>
+        <div class="secret" id="secret">?</div>
+      </div>
+
+      <div class="panel">
+        <h3>📋 Gợi ý điều tra</h3>
+        <div id="clueBox"></div>
+        <div class="options" id="options"></div>
+        <div class="feedback" id="feedback"></div>
+        <div class="miniscore" id="miniScore"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="endScreen">
+    <div class="endwrap">
+      <div class="trophy" id="trophy">🏆</div>
+      <h1>Hoàn thành điều tra!</h1>
+      <div class="stars" id="stars">⭐⭐⭐</div>
+      <div class="scorebig"><span id="finalScore">0</span> / 15 điểm</div>
+      <p class="endmsg" id="endMsg"></p>
+      <button class="btn blue" id="replayBtn">Chơi lại 🔄</button>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ============ DỮ LIỆU 5 HỒ SƠ ============ */
+const SHAPES = ["Khối lập phương","Khối hộp chữ nhật","Khối cầu","Khối trụ"];
+
+const CASES = [
+  {
+    answer:"Khối lập phương",
+    title:"Anh chàng vuông vức",
+    shape:"cube",
+    objects:"🎲 🧊 🟧",
+    clues:[
+      "Tôi có tất cả 6 mặt, 8 đỉnh và 12 cạnh.",
+      "Điều đặc biệt: cả 6 mặt của tôi đều là hình VUÔNG bằng nhau y hệt.",
+      "Con xúc xắc, viên Rubik, hộp quà vuông vức… chính là tôi!"
+    ],
+    why:"6 mặt đều là hình vuông bằng nhau ⇒ Khối lập phương."
+  },
+  {
+    answer:"Khối hộp chữ nhật",
+    title:"Bạn của những chiếc hộp",
+    shape:"box",
+    objects:"📦 🧱 🥛",
+    clues:[
+      "Tôi cũng có 6 mặt, 8 đỉnh và 12 cạnh giống bạn lập phương.",
+      "Nhưng các mặt của tôi là hình CHỮ NHẬT, mặt dài mặt ngắn khác nhau.",
+      "Hộp bánh, viên gạch, hộp sữa… đều có dạng của tôi!"
+    ],
+    why:"Các mặt là hình chữ nhật ⇒ Khối hộp chữ nhật."
+  },
+  {
+    answer:"Khối cầu",
+    title:"Kẻ lăn tròn bí ẩn",
+    shape:"sphere",
+    objects:"⚽ 🏀 🔵",
+    clues:[
+      "Tôi không có một đỉnh nào, cũng chẳng có cạnh nào cả.",
+      "Mặt ngoài của tôi cong tròn, tôi lăn được về mọi hướng.",
+      "Quả bóng đá, viên bi, trái đất… đều mang hình của tôi!"
+    ],
+    why:"Tròn, không đỉnh không cạnh, lăn mọi hướng ⇒ Khối cầu."
+  },
+  {
+    answer:"Khối trụ",
+    title:"Cây cột tròn xoe",
+    shape:"cyl",
+    objects:"🥫 🕯️ 🔋",
+    clues:[
+      "Tôi có hai mặt tròn bằng nhau ở hai đầu.",
+      "Phần thân giữa của tôi cong, tôi cũng lăn được nhưng không lăn lung tung.",
+      "Lon nước ngọt, cây nến, cục pin… đều có dạng của tôi!"
+    ],
+    why:"Hai đáy tròn bằng nhau, thân cong ⇒ Khối trụ."
+  },
+  {
+    answer:"Khối lập phương",
+    title:"Hồ sơ cuối: kẻ giả mạo",
+    shape:"cube",
+    objects:"🎁 🎲 🟫",
+    clues:[
+      "Cẩn thận nhé! Tôi có 6 mặt, 8 đỉnh, 12 cạnh — dễ nhầm với hộp chữ nhật.",
+      "Bí mật phá án: TẤT CẢ các cạnh của tôi đều dài bằng nhau, mọi mặt đều vuông.",
+      "Hộp quà vuông vức, con súc sắc lớn… đó là tôi!"
+    ],
+    why:"Mọi cạnh bằng nhau, mọi mặt là hình vuông ⇒ Khối lập phương."
+  }
+];
+
+/* ============ TRẠNG THÁI ============ */
+let idx=0, score=0, clueLevel=0, locked=false, soundOn=true;
+
+/* ============ ÂM THANH (Web Audio, không cần file) ============ */
+let actx=null;
+function beep(freq,dur=0.12,type="sine",vol=0.18){
+  if(!soundOn) return;
+  try{
+    actx = actx || new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(), g=actx.createGain();
+    o.type=type; o.frequency.value=freq; o.connect(g); g.connect(actx.destination);
+    g.gain.setValueAtTime(vol,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,actx.currentTime+dur);
+    o.start(); o.stop(actx.currentTime+dur);
+  }catch(e){}
+}
+const sndCorrect=()=>{beep(660,.12);setTimeout(()=>beep(880,.16),110);setTimeout(()=>beep(1175,.2),240)};
+const sndWrong=()=>{beep(200,.22,"square",.12)};
+const sndClue=()=>{beep(520,.08,"triangle",.12)};
+
+/* ============ TIỆN ÍCH ============ */
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(((i+1)*0.6180339887)%(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');}
+
+function shapeHTML(kind,name,objects){
+  let inner="";
+  if(kind==="cube") inner=`<div class="cube"><div class="face f1"></div><div class="face f2"></div><div class="face f3"></div><div class="face f4"></div><div class="face f5"></div><div class="face f6"></div></div>`;
+  else if(kind==="box") inner=`<div class="box"><div class="face b1"></div><div class="face b2"></div><div class="face b3"></div><div class="face b4"></div><div class="face b5"></div><div class="face b6"></div></div>`;
+  else if(kind==="sphere") inner=`<div class="sphere"></div>`;
+  else if(kind==="cyl") inner=`<div class="cyl"><div class="body"></div><div class="top"></div></div>`;
+  return `<div class="reveal-name">✅ ${name}</div><div class="shapeWrap">${inner}</div><div class="objlist">${objects}</div>`;
+}
+
+/* ============ LUỒNG GAME ============ */
+function startGame(){idx=0;score=0;updateStats();renderCase();show('gameScreen');}
+
+function updateStats(){
+  $("scoreStat").textContent=score;
+  $("caseStat").innerHTML=`Hồ sơ <b>${Math.min(idx,5)}/5</b>`;
+}
+
+function renderCase(){
+  const c=CASES[idx];
+  clueLevel=0; locked=false;
+  $("caseTag").textContent="HỒ SƠ #"+(idx+1);
+  $("caseTitle").textContent=c.title;
+  $("progBar").style.width=(idx/5*100)+"%";
+  updateStats();
+
+  // reset scene -> mystery
+  $("scene").innerHTML=`<div class="scanline"></div><div class="secret">?</div>`;
+
+  // clue box: render 3 clues, reveal first
+  const cb=$("clueBox"); cb.innerHTML="";
+  c.clues.forEach((t,i)=>{
+    cb.insertAdjacentHTML('beforeend',
+      `<div class="clue ${i===0?'':'hidden'}" id="clue${i}"><span class="n">${i+1}</span><span>${t}</span></div>`);
+  });
+
+  // options
+  const opts=$("options"); opts.innerHTML="";
+  shuffle(SHAPES).forEach(name=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=name;
+    b.onclick=()=>guess(name,b);
+    opts.appendChild(b);
+  });
+
+  $("feedback").textContent=""; $("feedback").className="feedback";
+  $("miniScore").textContent="Đoán đúng ngay bây giờ để được 3 điểm!";
+  $("actions").innerHTML="";
+}
+
+function guess(name,btn){
+  if(locked) return;
+  const c=CASES[idx];
+  if(name===c.answer){
+    locked=true;
+    const pts=3-clueLevel;
+    score+=pts; updateStats();
+    btn.classList.add('correct');
+    sndCorrect(); confetti();
+    revealShape();
+    $("feedback").className="feedback ok";
+    $("feedback").textContent=`🎉 Đúng rồi – tiếp tục! +${pts} điểm`;
+    $("miniScore").innerHTML=`<span class="pts">Vì sao? ${c.why}</span>`;
+    disableOptions();
+    nextButton();
+  }else{
+    btn.classList.add('wrong'); btn.disabled=true;
+    sndWrong();
+    if(clueLevel<2){
+      clueLevel++;
+      $("clue"+clueLevel).classList.remove('hidden');
+      sndClue();
+      $("feedback").className="feedback near";
+      $("feedback").textContent="🤔 Gần đúng – xem lại gợi ý nhé!";
+      $("miniScore").textContent=`Đoán đúng bây giờ được ${3-clueLevel} điểm.`;
+    }else{
+      // hết gợi ý
+      locked=true;
+      sndWrong();
+      revealShape();
+      $("feedback").className="feedback no";
+      $("feedback").textContent=`Đáp án là: ${c.answer}. Lần sau cố lên nhé!`;
+      $("miniScore").innerHTML=`<span class="pts">Ghi nhớ: ${c.why}</span>`;
+      disableOptions();
+      nextButton();
+    }
+  }
+}
+
+function revealShape(){
+  const c=CASES[idx];
+  $("scene").innerHTML=shapeHTML(c.shape,c.answer,c.objects);
+}
+function disableOptions(){document.querySelectorAll('.opt').forEach(o=>o.disabled=true);}
+
+function nextButton(){
+  $("progBar").style.width=((idx+1)/5*100)+"%";
+  const last = idx===CASES.length-1;
+  $("actions").innerHTML=`<button class="btn blue" id="nextBtn">${last?'Xem kết quả 🏁':'Hồ sơ tiếp theo ▶'}</button>`;
+  $("nextBtn").onclick=()=>{
+    idx++;
+    if(idx>=CASES.length) endGame();
+    else renderCase();
+  };
+}
+
+function endGame(){
+  updateStats();
+  $("finalScore").textContent=score;
+  const pct=score/15;
+  let stars="⭐", msg="", trophy="🎖️";
+  if(pct>=0.9){stars="⭐⭐⭐";trophy="🏆";msg="Thám tử siêu hạng! Em phân biệt hình khối cực giỏi!";}
+  else if(pct>=0.6){stars="⭐⭐";trophy="🥈";msg="Rất tốt! Em đã nắm chắc đặc điểm các hình khối.";}
+  else {stars="⭐";trophy="🥉";msg="Khá lắm! Ôn lại số mặt, đỉnh, cạnh rồi chơi lại nhé!";}
+  $("stars").textContent=stars; $("trophy").textContent=trophy; $("endMsg").textContent=msg;
+  show('endScreen');
+  if(pct>=0.6) confettiBurst();
+}
+
+/* ============ CONFETTI ============ */
+const COLORS=["#f59e0b","#22c55e","#3b82f6","#ef4444","#a855f7","#fbbf24"];
+function confetti(n=24){
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='confetti';
+    d.style.left=Math.random()*100+'vw';
+    d.style.background=COLORS[i%COLORS.length];
+    d.style.animationDuration=(1.6+Math.random()*1.4)+'s';
+    d.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),3200);
+  }
+}
+function confettiBurst(){let t=0;const iv=setInterval(()=>{confetti(20);if(++t>4)clearInterval(iv);},350);}
+
+/* ============ SỰ KIỆN ============ */
+$("startBtn").onclick=startGame;
+$("replayBtn").onclick=startGame;
+$("muteBtn").onclick=()=>{soundOn=!soundOn;$("muteBtn").textContent=soundOn?"🔊":"🔇";};
+</script>
+</body>
+</html>
