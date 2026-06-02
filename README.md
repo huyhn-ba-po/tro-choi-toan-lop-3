@@ -4,7 +4,7 @@ Bộ trò chơi dạy học tương tác cho học sinh **lớp 3**, chủ đề
 (Chương trình GDPT 2018). Chạy trực tiếp trên trình duyệt, không cần cài đặt.
 
 ## 🔗 Chơi online
-👉 **https://yamus142.github.io/tro-choi-toan-lop-3/**
+👉 **https://huyhn-ba-po.github.io/tro-choi-toan-lop-3/**
 
 Mở link trên là vào được trang chủ, bấm vào từng trò để chơi.
 
