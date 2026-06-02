@@ -3,137 +3,292 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>5 Trò chơi Toán lớp 3 · Hình học &amp; Đo lường</title>
+<title>Trò chơi Toán lớp 3 · Hình học &amp; Đo lường — Cô Đỗ Thị Thu</title>
+<meta name="description" content="Bộ 10 trò chơi dạy học nội dung Hình học và Đo lường cho học sinh lớp 3 — luận văn của Cô Đỗ Thị Thu." />
 <style>
+  :root{
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --primary:#4f46e5; --primary2:#7c3aed;
+    --paper:#ffffff; --soft:#f8fafc;
+    --radius:20px;
+    --shadow-sm:0 2px 8px rgba(15,23,42,.06);
+    --shadow:0 14px 34px rgba(15,23,42,.12);
+    --shadow-lg:0 26px 60px rgba(15,23,42,.22);
+    /* màu nhận diện từng game */
+    --g1:#4338ca; --g2:#0f766e; --g3:#b45309; --g4:#9333ea; --g5:#0c4a6e;
+    --g6:#1f2937; --g7:#0ea5e9; --g8:#4f46e5; --g9:#059669; --g10:#db2777;
+  }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:"Segoe UI",-apple-system,system-ui,Arial,sans-serif;color:#1f2937;min-height:100vh;
-    background:radial-gradient(1200px 700px at 20% -10%,#6366f1 0%,transparent 60%),
-               radial-gradient(900px 600px at 100% 0%,#ec4899 0%,transparent 55%),
-               linear-gradient(160deg,#1e1b4b,#312e81);padding:30px 18px}
-  .wrap{max-width:1000px;margin:0 auto}
-  header{text-align:center;color:#fff;margin-bottom:8px}
-  header .big{font-size:3.4rem}
-  header h1{font-size:2.2rem;margin:6px 0}
-  header p{opacity:.9;font-size:1.05rem}
-  .badge{display:inline-block;background:rgba(255,255,255,.15);color:#fde68a;font-weight:700;padding:5px 14px;border-radius:999px;margin-top:10px;font-size:.95rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:26px}
-  .card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.25);
-    text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
-  .card:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(0,0,0,.32)}
-  .card .top{padding:26px 20px;color:#fff;display:flex;align-items:center;gap:14px}
-  .card .top .ic{font-size:2.8rem}
-  .card .top .num{margin-left:auto;font-size:1.6rem;font-weight:900;opacity:.5}
-  .c1 .top{background:linear-gradient(135deg,#4338ca,#312e81)}
-  .c2 .top{background:linear-gradient(135deg,#0f766e,#065f46)}
-  .c3 .top{background:linear-gradient(135deg,#b45309,#7c2d12)}
-  .c4 .top{background:linear-gradient(135deg,#9333ea,#581c87)}
-  .c5 .top{background:linear-gradient(135deg,#0f766e,#0c4a6e)}
-  .c6 .top{background:linear-gradient(135deg,#334155,#0f172a)}
-  .c7 .top{background:linear-gradient(135deg,#334155,#0f172a)}
-  .c8 .top{background:linear-gradient(135deg,#4338ca,#0891b2)}
-  .c9 .top{background:linear-gradient(135deg,#064e3b,#0d9488)}
-  .c10 .top{background:linear-gradient(135deg,#6b21a8,#db2777)}
-  .sectionhdr{grid-column:1/-1;color:#fff;margin:14px 4px 0;border-top:2px dashed rgba(255,255,255,.25);padding-top:16px}
-  .sectionhdr h2{font-size:1.3rem}.sectionhdr p{opacity:.85;font-size:.92rem;margin-top:2px}
-  .card .top h2{font-size:1.25rem;line-height:1.2}
-  .card .body{padding:16px 20px 20px}
-  .card .body .topic{display:inline-block;background:#eef2ff;color:#4338ca;font-weight:700;font-size:.82rem;padding:4px 10px;border-radius:999px;margin-bottom:8px}
-  .card .body p{color:#4b5563;line-height:1.5;font-size:.97rem}
-  .card .play{margin-top:14px;font-weight:800;color:#4338ca}
-  footer{text-align:center;color:#fff;opacity:.85;margin-top:30px;font-size:.92rem;line-height:1.6}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI",-apple-system,system-ui,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink);line-height:1.55;
+    background:
+      radial-gradient(1100px 600px at 12% -8%, #c7d2fe 0%, transparent 55%),
+      radial-gradient(1000px 560px at 100% 0%, #fbcfe8 0%, transparent 52%),
+      radial-gradient(900px 600px at 50% 120%, #bae6fd 0%, transparent 55%),
+      #eef2ff;
+    min-height:100vh;
+  }
+  .wrap{max-width:1120px;margin:0 auto;padding:30px 20px 60px}
+
+  /* ===== HERO ===== */
+  .hero{
+    position:relative;overflow:hidden;
+    background:linear-gradient(150deg,#312e81 0%,#4f46e5 48%,#7c3aed 100%);
+    color:#fff;border-radius:28px;padding:40px 40px 36px;
+    box-shadow:var(--shadow-lg);
+  }
+  .hero .deco{position:absolute;opacity:.16;pointer-events:none}
+  .hero .d1{width:200px;height:200px;border:14px solid #fff;border-radius:50%;top:-70px;right:-40px}
+  .hero .d2{width:0;height:0;border-left:80px solid transparent;border-right:80px solid transparent;border-bottom:140px solid #fff;bottom:-30px;right:120px;transform:rotate(18deg)}
+  .hero .d3{width:120px;height:120px;border:12px solid #fff;border-radius:18px;bottom:-46px;left:40px;transform:rotate(14deg)}
+  .hero .d4{width:90px;height:90px;background:#fff;border-radius:50%;top:30px;left:-30px;opacity:.10}
+  .hero-inner{position:relative;z-index:2}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);
+    padding:6px 14px;border-radius:999px;font-size:.82rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+    backdrop-filter:blur(4px);
+  }
+  .thesis-title{
+    font-size:clamp(1.5rem,3.4vw,2.55rem);font-weight:900;line-height:1.18;
+    margin:16px 0 6px;max-width:18ch;text-wrap:balance;
+    text-shadow:0 2px 18px rgba(0,0,0,.18);
+  }
+  .subject-line{font-size:1.02rem;opacity:.92;font-weight:500;max-width:60ch}
+  .author{
+    display:inline-flex;align-items:center;gap:12px;margin-top:22px;
+    background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+    padding:10px 18px 10px 12px;border-radius:16px;backdrop-filter:blur(4px);
+  }
+  .author .ava{width:42px;height:42px;border-radius:50%;background:#fde68a;display:grid;place-items:center;font-size:1.4rem;flex:none}
+  .author .who{font-size:.82rem;opacity:.85;text-transform:uppercase;letter-spacing:1px}
+  .author .name{font-size:1.18rem;font-weight:800;line-height:1.1}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);padding:6px 13px;border-radius:999px;font-size:.86rem;font-weight:600}
+  .chip b{color:#fde68a}
+
+  /* ===== INTRO ===== */
+  .intro{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 26px;margin-top:22px;box-shadow:var(--shadow-sm);
+    display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+  }
+  .intro p{flex:1;min-width:260px;color:#334155;font-size:1.02rem}
+  .intro .stat{display:flex;gap:20px;flex-wrap:wrap}
+  .intro .stat .s{text-align:center}
+  .intro .stat .n{font-size:1.9rem;font-weight:900;color:var(--primary);line-height:1}
+  .intro .stat .l{font-size:.8rem;color:var(--muted);margin-top:3px}
+
+  /* ===== SECTION ===== */
+  .section{margin-top:40px}
+  .sec-head{display:flex;align-items:flex-end;gap:14px;margin-bottom:18px;flex-wrap:wrap}
+  .sec-head .badge{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;font-size:1.5rem;color:#fff;flex:none;box-shadow:var(--shadow-sm)}
+  .sec-head .b1{background:linear-gradient(135deg,#4f46e5,#7c3aed)}
+  .sec-head .b2{background:linear-gradient(135deg,#0f172a,#334155)}
+  .sec-head h2{font-size:1.5rem;font-weight:900;letter-spacing:-.5px}
+  .sec-head p{color:var(--muted);font-size:.96rem;flex-basis:100%;margin-top:2px}
+
+  /* ===== GRID + CARDS ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(248px,1fr));gap:18px}
+  .card{
+    position:relative;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;
+    box-shadow:var(--shadow-sm);transition:transform .18s cubic-bezier(.34,1.4,.64,1),box-shadow .18s,border-color .18s;
+    animation:rise .5s both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .card:hover{transform:translateY(-7px);box-shadow:var(--shadow);border-color:transparent}
+  .card:focus-visible{outline:3px solid var(--primary);outline-offset:2px}
+  .card .strip{height:7px;background:var(--c)}
+  .card .head{display:flex;align-items:center;gap:13px;padding:18px 18px 8px}
+  .card .icon{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:1.9rem;
+    background:color-mix(in srgb,var(--c) 14%,#fff);border:1px solid color-mix(in srgb,var(--c) 25%,#fff);flex:none}
+  .card .num{margin-left:auto;font-weight:900;font-size:1.05rem;color:#fff;background:var(--c);
+    width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;box-shadow:var(--shadow-sm)}
+  .card h3{padding:0 18px;font-size:1.16rem;font-weight:800;line-height:1.25;margin-top:2px}
+  .card .topic{margin:8px 18px 0;display:inline-block;align-self:flex-start;font-size:.78rem;font-weight:700;
+    color:var(--c);background:color-mix(in srgb,var(--c) 12%,#fff);padding:4px 11px;border-radius:999px}
+  .card .desc{padding:10px 18px 0;color:#475569;font-size:.93rem;flex:1}
+  .card .cta{display:flex;align-items:center;gap:6px;padding:14px 18px 18px;font-weight:800;color:var(--c)}
+  .card .cta .arrow{transition:transform .18s}
+  .card:hover .cta .arrow{transform:translateX(5px)}
+
+  .tagline{display:inline-flex;gap:6px;align-items:center;margin-left:auto;font-size:.82rem;color:var(--muted);font-weight:600}
+
+  /* ===== FOOTER ===== */
+  footer{margin-top:46px;text-align:center;color:#475569}
+  footer .div{height:1px;background:var(--line);margin-bottom:22px}
+  footer .ft-title{font-weight:800;color:var(--ink);max-width:46ch;margin:0 auto;font-size:1rem;line-height:1.4}
+  footer .ft-author{margin-top:10px;font-size:.95rem}
+  footer .ft-author b{color:var(--primary)}
+  footer .ft-small{margin-top:10px;font-size:.82rem;color:#94a3b8}
+
+  @media(max-width:560px){
+    .hero{padding:28px 22px}
+    .wrap{padding:18px 14px 48px}
+    .intro{padding:18px}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="big">🎮</div>
-    <h1>5 Trò chơi Toán lớp 3</h1>
-    <p>Chủ đề: Hình học &amp; Đo lường · Chương trình GDPT 2018</p>
-    <span class="badge">Bấm vào một trò chơi để bắt đầu 👇</span>
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="deco d1"></span><span class="deco d2"></span><span class="deco d3"></span><span class="deco d4"></span>
+    <div class="hero-inner">
+      <span class="eyebrow">📘 Luận văn tốt nghiệp</span>
+      <h1 class="thesis-title">Vận dụng phương pháp tổ chức trò chơi thiết kế hoạt động dạy học nội dung Hình học và Đo lường cho học sinh lớp 3</h1>
+      <p class="subject-line">Bộ trò chơi học tập tương tác, minh hoạ cho phương pháp tổ chức trò chơi trong dạy học môn Toán.</p>
+      <div class="author">
+        <span class="ava">👩‍🏫</span>
+        <span><span class="who">Người thực hiện</span><br><span class="name">Cô Đỗ Thị Thu</span></span>
+      </div>
+      <div class="chips">
+        <span class="chip">Môn <b>Toán lớp 3</b></span>
+        <span class="chip">Hình học &amp; Đo lường</span>
+        <span class="chip">Chương trình <b>GDPT 2018</b></span>
+        <span class="chip"><b>10</b> trò chơi</span>
+      </div>
+    </div>
   </header>
 
-  <div class="grid">
-    <a class="card c1" href="1-tham-tu-hinh-khoi/index.html">
-      <div class="top"><span class="ic">🔎</span><h2>Thám tử hình khối</h2><span class="num">1</span></div>
-      <div class="body"><span class="topic">Khối hộp chữ nhật · Khối lập phương</span>
-        <p>Đọc gợi ý bí ẩn rồi đoán xem đó là hình khối nào. Đoán càng sớm điểm càng cao!</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c2" href="2-cuoc-dua-do-luong/index.html">
-      <div class="top"><span class="ic">🏎️</span><h2>Cuộc đua đo lường</h2><span class="num">2</span></div>
-      <div class="body"><span class="topic">Xem đồng hồ</span>
-        <p>Lái xe qua 5 trạm, xem đồng hồ chỉ mấy giờ và biết bạn nhỏ đang làm gì lúc đó.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c3" href="3-xay-nha-hinh-hoc/index.html">
-      <div class="top"><span class="ic">🏗️</span><h2>Xây nhà hình học</h2><span class="num">3</span></div>
-      <div class="body"><span class="topic">Chu vi · Diện tích</span>
-        <p>Làm bác thợ xây: tính chu vi, diện tích để chọn vật liệu và dựng nên ngôi nhà mơ ước.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c4" href="4-ai-nhanh-ai-dung/index.html">
-      <div class="top"><span class="ic">⚡</span><h2>Ai nhanh – Ai đúng</h2><span class="num">4</span></div>
-      <div class="body"><span class="topic">Đơn vị đo: độ dài · khối lượng · dung tích</span>
-        <p>Đấu trường tốc độ! Đổi đơn vị đo thật nhanh trong 10 giây để giành ngôi quán quân.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c5" href="5-hanh-trinh-kham-pha/index.html">
-      <div class="top"><span class="ic">🗺️</span><h2>Hành trình khám phá</h2><span class="num">5</span></div>
-      <div class="body"><span class="topic">Ôn tập tổng hợp cuối chương</span>
-        <p>Phiêu lưu qua 5 điểm đến, thu thập mảnh ghép và tìm ra kho báu kiến thức bí mật.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <div class="sectionhdr">
-      <h2>🎥 Nhóm trò chơi vận động qua camera</h2>
-      <p>Học sinh nghiêng người / ngồi xuống / giơ tay để chọn đáp án. Webcam nhận chuyển động.
-      <b>Mở bằng start.bat trong từng thư mục</b> để bật được camera (hoặc chơi bằng chuột / phím).</p>
+  <!-- INTRO -->
+  <div class="intro">
+    <p>Mười trò chơi được thiết kế bám sát mục tiêu bài học, chia làm hai nhóm: <b>nhóm tương tác trên màn hình</b> và <b>nhóm vận động cơ thể qua camera</b>. Mỗi trò gắn với một nội dung Hình học – Đo lường cụ thể, giúp học sinh vừa học vừa chơi, phát triển tư duy và hứng thú.</p>
+    <div class="stat">
+      <div class="s"><div class="n">10</div><div class="l">trò chơi</div></div>
+      <div class="s"><div class="n">5</div><div class="l">chủ đề toán</div></div>
+      <div class="s"><div class="n">2</div><div class="l">hình thức chơi</div></div>
     </div>
-
-    <a class="card c6" href="6-trai-hay-phai/index.html">
-      <div class="top"><span class="ic">🙆</span><h2>Trái hay Phải – Hình gì đây?</h2><span class="num">6</span></div>
-      <div class="body"><span class="topic">Hình khối · nghiêng trái/phải</span>
-        <p>Nhìn hình khối, nghiêng trái/phải để chọn Đúng–Sai về đặc điểm hình.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c7" href="7-dung-dung-goc/index.html">
-      <div class="top"><span class="ic">🕐</span><h2>Đứng đúng góc – Chọn đúng giờ</h2><span class="num">7</span></div>
-      <div class="body"><span class="topic">Xem đồng hồ · 4 động tác</span>
-        <p>Đọc giờ trên đồng hồ rồi nghiêng/ngồi/giơ tay về phía đáp án đúng.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c8" href="8-nguoi-may-do-luong/index.html">
-      <div class="top"><span class="ic">🤖</span><h2>Người máy đo lường</h2><span class="num">8</span></div>
-      <div class="body"><span class="topic">So sánh · đổi đơn vị · lắc trái/phải</span>
-        <p>Đóng vai người máy: lắc trái = Đúng, lắc phải = Sai với các phép so sánh.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c9" href="9-nhay-vao-hinh-dung/index.html">
-      <div class="top"><span class="ic">🤸</span><h2>Nhảy vào hình đúng</h2><span class="num">9</span></div>
-      <div class="body"><span class="topic">Hình phẳng · 4 động tác</span>
-        <p>Nhận biết vuông – chữ nhật – tam giác – hình thang bằng động tác cơ thể.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
-
-    <a class="card c10" href="10-vu-dieu-so-do/index.html">
-      <div class="top"><span class="ic">💃</span><h2>Vũ điệu số đo</h2><span class="num">10</span></div>
-      <div class="body"><span class="topic">Ôn tập tổng hợp · 4 động tác</span>
-        <p>Vũ điệu 4 động tác ôn cả 5 chủ đề: hình khối, chu vi, đồng hồ, đo lường.</p>
-        <div class="play">▶ Chơi ngay</div></div>
-    </a>
   </div>
 
+  <!-- NHÓM 1 -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="badge b1">🖱️</span>
+      <h2>Nhóm 1 · Trò chơi tương tác trên màn hình</h2>
+      <span class="tagline">Bấm chuột hoặc chạm</span>
+      <p>Học sinh trả lời bằng cách bấm chọn đáp án trên màn hình, máy tính bảng hoặc bảng tương tác.</p>
+    </div>
+    <div class="grid">
+
+      <a class="card" style="--c:var(--g1);animation-delay:.02s" href="1-tham-tu-hinh-khoi/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🔎</span><span class="num">1</span></div>
+        <h3>Thám tử hình khối</h3>
+        <span class="topic">Khối lập phương · hộp chữ nhật · cầu · trụ</span>
+        <p class="desc">Đọc các gợi ý bí ẩn rồi đoán xem đó là hình khối nào. Đoán càng sớm điểm càng cao.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g2);animation-delay:.06s" href="2-cuoc-dua-do-luong/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🏎️</span><span class="num">2</span></div>
+        <h3>Cuộc đua đo lường</h3>
+        <span class="topic">Xem đồng hồ</span>
+        <p class="desc">Lái xe qua 5 trạm, đọc đúng giờ trên đồng hồ kim và biết bạn nhỏ đang làm gì lúc đó.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g3);animation-delay:.10s" href="3-xay-nha-hinh-hoc/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🏗️</span><span class="num">3</span></div>
+        <h3>Xây nhà hình học</h3>
+        <span class="topic">Chu vi · Diện tích</span>
+        <p class="desc">Làm bác thợ xây: tính chu vi, diện tích để chọn vật liệu và dựng nên ngôi nhà.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g4);animation-delay:.14s" href="4-ai-nhanh-ai-dung/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">⚡</span><span class="num">4</span></div>
+        <h3>Ai nhanh – Ai đúng</h3>
+        <span class="topic">Đổi đơn vị độ dài · khối lượng · dung tích</span>
+        <p class="desc">Đấu trường tốc độ: đổi đơn vị đo thật nhanh trong 10 giây để giành quán quân.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g5);animation-delay:.18s" href="5-hanh-trinh-kham-pha/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🗺️</span><span class="num">5</span></div>
+        <h3>Hành trình khám phá</h3>
+        <span class="topic">Ôn tập tổng hợp cuối chương</span>
+        <p class="desc">Phiêu lưu qua 5 điểm đến, thu thập mảnh ghép và tìm ra kho báu kiến thức bí mật.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- NHÓM 2 -->
+  <section class="section">
+    <div class="sec-head">
+      <span class="badge b2">🎥</span>
+      <h2>Nhóm 2 · Trò chơi vận động qua camera</h2>
+      <span class="tagline">Nghiêng · ngồi · giơ tay</span>
+      <p>Học sinh dùng chuyển động cơ thể trước webcam để chọn đáp án — tăng vận động và phản xạ. Đều có chế độ chuột / phím ←→↑↓ dự phòng.</p>
+    </div>
+    <div class="grid">
+
+      <a class="card" style="--c:var(--g6);animation-delay:.02s" href="6-trai-hay-phai/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🙆</span><span class="num">6</span></div>
+        <h3>Trái hay Phải – Hình gì đây?</h3>
+        <span class="topic">Hình khối · nghiêng trái/phải</span>
+        <p class="desc">Nhìn hình khối, nghiêng người sang trái hoặc phải để chọn Đúng – Sai về đặc điểm.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g7);animation-delay:.06s" href="7-dung-dung-goc/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🕐</span><span class="num">7</span></div>
+        <h3>Đứng đúng góc – Chọn đúng giờ</h3>
+        <span class="topic">Xem đồng hồ · 4 động tác</span>
+        <p class="desc">Đọc giờ trên đồng hồ rồi nghiêng, ngồi hoặc giơ tay về phía đáp án đúng.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g8);animation-delay:.10s" href="8-nguoi-may-do-luong/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🤖</span><span class="num">8</span></div>
+        <h3>Người máy đo lường</h3>
+        <span class="topic">So sánh · đổi đơn vị · lắc trái/phải</span>
+        <p class="desc">Đóng vai người máy: lắc trái là Đúng, lắc phải là Sai với các phép so sánh đại lượng.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g9);animation-delay:.14s" href="9-nhay-vao-hinh-dung/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">🤸</span><span class="num">9</span></div>
+        <h3>Nhảy vào hình đúng</h3>
+        <span class="topic">Hình phẳng · 4 động tác</span>
+        <p class="desc">Nhận biết hình vuông – chữ nhật – tam giác – hình thang bằng động tác cơ thể.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" style="--c:var(--g10);animation-delay:.18s" href="10-vu-dieu-so-do/index.html">
+        <div class="strip"></div>
+        <div class="head"><span class="icon">💃</span><span class="num">10</span></div>
+        <h3>Vũ điệu số đo</h3>
+        <span class="topic">Ôn tập tổng hợp · 4 động tác</span>
+        <p class="desc">Vũ điệu bốn động tác ôn lại cả 5 chủ đề: hình khối, chu vi, đồng hồ và đo lường.</p>
+        <span class="cta">Chơi ngay <span class="arrow">→</span></span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer>
-    Mở offline trên máy tính · máy tính bảng · bảng tương tác — không cần Internet.<br>
-    Có âm thanh, chấm điểm và phản hồi tự động cho học sinh lớp 3.
+    <div class="div"></div>
+    <p class="ft-title">Vận dụng phương pháp tổ chức trò chơi thiết kế hoạt động dạy học nội dung Hình học và Đo lường cho học sinh lớp 3</p>
+    <p class="ft-author">Người thực hiện: <b>Cô Đỗ Thị Thu</b></p>
+    <p class="ft-small">Sản phẩm minh hoạ cho luận văn · Toán lớp 3 · Chương trình GDPT 2018</p>
   </footer>
+
 </div>
 </body>
 </html>
