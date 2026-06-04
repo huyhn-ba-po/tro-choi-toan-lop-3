@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Nhảy vào hình đúng · Toán lớp 3</title>
+<title>Chọn hình đúng · Toán lớp 3</title>
 <style>
   :root{
-    --sq:#ef4444; --sqd:#b91c1c;    /* hình vuông - đỏ - TRÁI */
-    --rect:#3b82f6; --rectd:#1d4ed8; /* hình chữ nhật - xanh dương - PHẢI */
-    --tri:#f59e0b; --trid:#b45309;   /* tam giác - vàng - NGỒI */
-    --tra:#a855f7; --trad:#7e22ce;   /* hình thang - tím - GIƠ TAY */
-    --bg1:#052e16; --bg2:#064e3b; --ink:#1f2937; --muted:#6b7280; --gold:#f59e0b;
+    --bg1:#052e16; --bg2:#064e3b; --card:#ffffff;
+    --green:#22c55e; --gold:#f59e0b; --ink:#1f2937; --muted:#6b7280;
     --shadow:0 18px 40px rgba(0,0,0,.32); --r:22px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -29,21 +26,20 @@
   .iconbtn{background:rgba(255,255,255,.16);border:0;color:#fff;cursor:pointer;width:36px;height:36px;border-radius:50%;font-size:1rem;display:grid;place-items:center}
   .iconbtn:hover{background:rgba(255,255,255,.3)}
 
-  .screen{padding:20px 20px 26px;display:none;animation:fade .35s ease}.screen.active{display:block}
+  .screen{padding:22px 22px 28px;display:none;animation:fade .35s ease}.screen.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
   .hero{text-align:center;padding:6px}
-  .hero .big{font-size:3.6rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
+  .hero .big{font-size:3.8rem;display:inline-block;animation:bob 2.4s ease-in-out infinite}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
-  .hero h1{font-size:1.9rem;color:var(--bg2);margin:6px 0 2px}
-  .hero .sub{color:var(--muted);font-size:1rem;margin-bottom:12px}
-  .howto{text-align:left;background:#f0fdf4;border:2px dashed #bbf7d0;border-radius:16px;padding:14px 18px;max-width:660px;margin:0 auto 12px}
+  .hero h1{font-size:2rem;color:var(--bg2);margin:6px 0 2px}
+  .hero .sub{color:var(--muted);font-size:1rem;margin-bottom:14px}
+  .howto{text-align:left;background:#f0fdf4;border:2px dashed #bbf7d0;border-radius:16px;padding:16px 18px;max-width:640px;margin:0 auto 14px}
   .howto h3{color:var(--bg2);margin-bottom:8px}.howto li{margin:6px 0;color:#374151;line-height:1.5}
-  .keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:680px;margin:0 auto 14px}
-  .keys .k{border-radius:12px;padding:10px;text-align:center;color:#fff;font-weight:800;font-size:.9rem}
-  .keys .k .e{font-size:1.6rem;display:block}
-  .keys .kS{background:var(--sq)} .keys .kR{background:var(--rect)} .keys .kT{background:var(--tri)} .keys .kZ{background:var(--tra)}
-  .warn{background:#fffbeb;border:2px solid #fcd34d;color:#92400e;border-radius:14px;padding:12px 14px;max-width:660px;margin:0 auto 12px;font-size:.95rem;line-height:1.5;display:none}
+  .demo{display:flex;gap:14px;justify-content:center;margin:6px auto 16px;flex-wrap:wrap}
+  .demo .d{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:12px 18px;text-align:center;font-weight:700}
+  .demo .d .e{font-size:2rem;display:block}
+  .warn{background:#fffbeb;border:2px solid #fcd34d;color:#92400e;border-radius:14px;padding:12px 14px;max-width:640px;margin:0 auto 14px;font-size:.95rem;line-height:1.5;display:none}
   .warn.show{display:block}
 
   .btn{border:0;cursor:pointer;font-family:inherit;font-weight:800;padding:15px 28px;border-radius:15px;font-size:1.1rem;color:#fff;
@@ -53,47 +49,46 @@
   .btn.ghost{background:#f1f5f9;color:#334155;box-shadow:0 6px 0 #cbd5e1}.btn.ghost:active{box-shadow:0 2px 0 #cbd5e1}
   .btnrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
-  .qtop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .qtop{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
   .tag{background:#064e3b;color:#fde68a;font-weight:800;padding:6px 13px;border-radius:11px}
   .timer{font-weight:900;font-size:1.3rem;color:#064e3b}
-  .timerbar{height:14px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-bottom:12px}
+  .timerbar{height:14px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-bottom:14px}
   .timerbar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#fde047,#ef4444);transition:width .1s linear}
 
-  .arena{display:grid;grid-template-columns:1fr 1.25fr 1fr;grid-template-rows:auto auto auto;gap:10px;align-items:center;justify-items:center;margin-bottom:12px}
-  .center{grid-column:2;grid-row:2}.topslot{grid-column:2;grid-row:1}.botslot{grid-column:2;grid-row:3}.leftslot{grid-column:1;grid-row:2}.rightslot{grid-column:3;grid-row:2}
-  .choice{border-radius:16px;padding:10px 8px;text-align:center;color:#fff;font-weight:900;cursor:pointer;position:relative;border:4px solid transparent;transition:.15s;user-select:none;width:100%}
-  .choice .dir{display:block;font-size:.78rem;font-weight:700;opacity:.92}
-  .choice .nm{font-size:1.05rem}
-  .choice svg{display:block;margin:4px auto 2px}
-  .cS{background:linear-gradient(180deg,#f87171,#dc2626)} .cR{background:linear-gradient(180deg,#60a5fa,#2563eb)}
-  .cT{background:linear-gradient(180deg,#fbbf24,#d97706)} .cZ{background:linear-gradient(180deg,#c084fc,#9333ea)}
-  .choice:hover{transform:translateY(-2px)}
+  .qcard{background:linear-gradient(180deg,#ecfdf5,#d1fae5);border:3px solid #6ee7b7;border-radius:16px;padding:16px 14px;text-align:center;margin-bottom:14px}
+  .qcard .lead{font-size:.85rem;color:#047857;font-weight:700}
+  .qcard .q{font-size:1.4rem;font-weight:900;color:#064e3b;margin-top:4px;line-height:1.35}
+
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .choice{border-radius:18px;padding:14px 12px 18px;text-align:center;color:#fff;font-weight:900;cursor:pointer;position:relative;border:4px solid transparent;transition:.15s;user-select:none}
+  .choice .dir{display:block;font-size:.95rem;font-weight:700;opacity:.92;margin-bottom:4px}
+  .choice svg{display:block;margin:6px auto 4px}
+  .choice .nm{font-size:1.3rem}
+  .choice:hover{transform:translateY(-3px)}
   .choice.lead{border-color:#fff;box-shadow:0 0 0 5px rgba(6,78,59,.3)}
   .choice.correct{outline:5px solid #fde047;outline-offset:2px}
-  .choice.wrong{opacity:.4;filter:grayscale(.4)}
-  .fillbar{position:absolute;left:0;bottom:0;height:6px;background:rgba(255,255,255,.85);width:0%;border-radius:0 0 12px 12px;transition:width .12s}
-  .qcard{background:linear-gradient(180deg,#ecfdf5,#d1fae5);border:3px solid #6ee7b7;border-radius:16px;padding:16px 14px;text-align:center;min-width:230px}
-  .qcard .lead{font-size:.85rem;color:#047857;font-weight:700}
-  .qcard .q{font-size:1.3rem;font-weight:900;color:#064e3b;margin-top:6px;line-height:1.35}
+  .choice.wrong{opacity:.45;filter:grayscale(.4)}
+  .fillbar{position:absolute;left:0;bottom:0;height:6px;background:rgba(255,255,255,.85);width:0%;border-radius:0 0 14px 14px;transition:width .12s}
 
-  .campanel{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:6px}
-  .camwrap{position:relative;width:190px;height:142px;border-radius:14px;overflow:hidden;background:#0f172a;border:3px solid #334155;flex:none}
+  .campanel{display:flex;align-items:center;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+  .camwrap{position:relative;width:200px;height:150px;border-radius:14px;overflow:hidden;background:#0f172a;border:3px solid #334155;flex:none}
   .camwrap video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
-  .camwrap .vdiv,.camwrap .hdiv{position:absolute;background:rgba(255,255,255,.4)}
-  .camwrap .vdiv{top:0;bottom:0;left:50%;width:2px}.camwrap .hdiv{left:0;right:0;top:50%;height:2px}
-  .camwrap .off{position:absolute;inset:0;display:grid;place-items:center;color:#94a3b8;font-size:.8rem;text-align:center;padding:10px}
-  .motionbars{display:flex;flex-direction:column;gap:6px;min-width:210px}
-  .mrow{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.82rem}
-  .mrow .nm2{width:96px}.mrow .bar{flex:1;height:14px;background:#e2e8f0;border-radius:999px;overflow:hidden}.mrow .bar>i{display:block;height:100%;width:0%}
-  .mrow.S .bar>i{background:var(--sq)} .mrow.R .bar>i{background:var(--rect)} .mrow.T .bar>i{background:var(--tri)} .mrow.Z .bar>i{background:var(--tra)}
+  .camwrap .divider{position:absolute;top:0;bottom:0;left:50%;width:2px;background:rgba(255,255,255,.55)}
+  .camwrap .lbl{position:absolute;top:4px;font-size:.7rem;font-weight:800;color:#fff;text-shadow:0 1px 2px #000;padding:2px 6px;border-radius:6px;background:rgba(0,0,0,.45)}
+  .camwrap .lblL{left:6px} .camwrap .lblR{right:6px}
+  .camwrap .off{position:absolute;inset:0;display:grid;place-items:center;color:#94a3b8;font-size:.85rem;text-align:center;padding:10px}
+  .motionbars{display:flex;flex-direction:column;gap:8px;min-width:180px}
+  .mrow{display:flex;align-items:center;gap:8px;font-weight:800;font-size:.9rem}
+  .mrow .bar{flex:1;height:16px;background:#e2e8f0;border-radius:999px;overflow:hidden}.mrow .bar>i{display:block;height:100%;width:0%}
+  .mrow.l .bar>i{background:#0ea5e9} .mrow.r .bar>i{background:#22c55e}
 
-  .feedback{margin-top:10px;min-height:26px;text-align:center;font-weight:800;font-size:1.12rem}
-  .feedback.ok{color:#059669}.feedback.no{color:var(--sqd)}
-  .actions{margin-top:8px;text-align:center}
+  .feedback{margin-top:12px;min-height:28px;text-align:center;font-weight:800;font-size:1.15rem}
+  .feedback.ok{color:#059669}.feedback.no{color:#b45309}
+  .actions{margin-top:10px;text-align:center}
 
-  .endwrap{text-align:center;padding:14px 6px}.endwrap .big{font-size:4.4rem;animation:bob 2.4s ease-in-out infinite}
+  .endwrap{text-align:center;padding:14px 6px}.endwrap .big{font-size:4.6rem;animation:bob 2.4s ease-in-out infinite}
   .endwrap h1{color:var(--bg2);font-size:1.9rem;margin:6px 0}.stars{font-size:2.3rem;letter-spacing:6px}
-  .scorebig{font-size:2.5rem;font-weight:900;color:var(--gold);margin:6px 0}.endmsg{color:#374151;font-size:1.1rem;margin-bottom:16px}
+  .scorebig{font-size:2.6rem;font-weight:900;color:var(--gold);margin:6px 0}.endmsg{color:#374151;font-size:1.1rem;margin-bottom:16px}
   .confetti{position:fixed;top:-10px;width:10px;height:16px;opacity:.9;z-index:50;border-radius:2px;animation:fall linear forwards}
   @keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
 </style>
@@ -101,7 +96,7 @@
 <body>
 <div class="stage">
   <div class="topbar">
-    <div class="brand"><span class="badge">🤸</span> Nhảy vào hình đúng</div>
+    <div class="brand"><span class="badge">🤸</span> Chọn hình đúng</div>
     <div class="right">
       <span class="pill" id="qStat">Câu <b>0/10</b></span>
       <span class="pill">Điểm <b id="scoreStat">0</b></span>
@@ -113,27 +108,25 @@
   <section class="screen active" id="startScreen">
     <div class="hero">
       <div class="big">🤸</div>
-      <h1>Nhảy vào hình đúng</h1>
-      <p class="sub">Toán lớp 3 · Nhận biết hình vuông – chữ nhật – tam giác – hình thang</p>
+      <h1>Chọn hình đúng</h1>
+      <p class="sub">Toán lớp 3 · Hình vuông – chữ nhật – tam giác – hình thang</p>
     </div>
     <div class="howto">
       <h3>🎯 Cách chơi</h3>
       <ul style="padding-left:20px">
-        <li>Giữa màn hình hiện một <b>câu hỏi về hình</b>. Bốn phía là <b>4 hình phẳng</b>.</li>
-        <li>Em làm <b>động tác cơ thể</b> để nhảy về phía hình đúng (camera nhận biết).</li>
-        <li>Mỗi câu <b>7 giây</b>. Bốn hình luôn ở cố định một chỗ để em dễ nhớ!</li>
+        <li>Trên màn hình hiện một <b>câu hỏi về hình</b> và <b>2 hình</b> ở hai bên.</li>
+        <li><b>Nghiêng người sang TRÁI</b> để chọn hình bên trái, <b>sang PHẢI</b> để chọn hình bên phải.</li>
+        <li>Camera nhìn em nghiêng bên nào nhiều hơn. Mỗi câu <b>7 giây</b>.</li>
       </ul>
     </div>
-    <div class="keys">
-      <div class="k kS"><span class="e">👈</span>TRÁI = Hình VUÔNG (đỏ)</div>
-      <div class="k kR"><span class="e">👉</span>PHẢI = Hình CHỮ NHẬT (xanh dương)</div>
-      <div class="k kT"><span class="e">🪑</span>NGỒI = Hình TAM GIÁC (vàng)</div>
-      <div class="k kZ"><span class="e">🙌</span>GIƠ TAY = Hình THANG (tím)</div>
+    <div class="demo">
+      <div class="d"><span class="e">👈</span>Nghiêng TRÁI<br>= hình bên trái</div>
+      <div class="d"><span class="e">👉</span>Nghiêng PHẢI<br>= hình bên phải</div>
     </div>
     <div class="warn" id="warn"></div>
     <div class="btnrow">
       <button class="btn" id="camBtn">📷 Bật camera &amp; chơi</button>
-      <button class="btn ghost" id="noCamBtn">🖱️ Chơi bằng chuột / phím ←→↑↓</button>
+      <button class="btn ghost" id="noCamBtn">🖱️ Chơi bằng chuột / phím ←→</button>
     </div>
   </section>
 
@@ -142,43 +135,24 @@
     <div class="qtop"><span class="tag" id="qTag">CÂU 1</span><span class="timer" id="timer">⏱️ 7</span></div>
     <div class="timerbar"><i id="timerFill"></i></div>
 
-    <div class="arena">
-      <div class="topslot">
-        <div class="choice cZ" id="cZ" data-dir="top"><span class="dir">🙌 Giơ tay</span>
-          <svg width="60" height="40"><polygon points="14,34 46,34 38,8 22,8" fill="#fff" opacity=".95"/></svg>
-          <span class="nm">Hình THANG</span><div class="fillbar" id="fillZ"></div></div>
-      </div>
-      <div class="leftslot">
-        <div class="choice cS" id="cS" data-dir="left"><span class="dir">👈 Trái</span>
-          <svg width="46" height="46"><rect x="8" y="8" width="30" height="30" fill="#fff" opacity=".95"/></svg>
-          <span class="nm">Hình VUÔNG</span><div class="fillbar" id="fillS"></div></div>
-      </div>
-      <div class="center">
-        <div class="qcard"><span class="lead">❓ CÂU HỎI</span><div class="q" id="question"></div></div>
-      </div>
-      <div class="rightslot">
-        <div class="choice cR" id="cR" data-dir="right"><span class="dir">Phải 👉</span>
-          <svg width="62" height="40"><rect x="8" y="11" width="46" height="22" fill="#fff" opacity=".95"/></svg>
-          <span class="nm">Hình CHỮ NHẬT</span><div class="fillbar" id="fillR"></div></div>
-      </div>
-      <div class="botslot">
-        <div class="choice cT" id="cT" data-dir="bottom"><span class="dir">🪑 Ngồi xuống</span>
-          <svg width="50" height="42"><polygon points="25,8 44,36 6,36" fill="#fff" opacity=".95"/></svg>
-          <span class="nm">Hình TAM GIÁC</span><div class="fillbar" id="fillT"></div></div>
-      </div>
+    <div class="qcard"><span class="lead">❓ CÂU HỎI</span><div class="q" id="question"></div></div>
+
+    <div class="choices">
+      <div class="choice left" id="choiceL" data-side="left"><span class="dir">👈 Nghiêng TRÁI</span><span id="optL"></span><div class="fillbar" id="fillL"></div></div>
+      <div class="choice right" id="choiceR" data-side="right"><span class="dir">Nghiêng PHẢI 👉</span><span id="optR"></span><div class="fillbar" id="fillR"></div></div>
     </div>
 
     <div class="campanel">
       <div class="camwrap">
         <video id="video" autoplay playsinline muted></video>
-        <div class="vdiv"></div><div class="hdiv"></div>
-        <div class="off" id="camOff">Chế độ không camera —<br>bấm ô hoặc phím ←→↑↓</div>
+        <div class="divider"></div>
+        <span class="lbl lblL">TRÁI</span><span class="lbl lblR">PHẢI</span>
+        <div class="off" id="camOff">Chế độ không camera —<br>bấm ô hoặc phím ←/→</div>
       </div>
       <div class="motionbars">
-        <div class="mrow S"><span class="nm2">👈 Vuông</span><div class="bar"><i id="barS"></i></div></div>
-        <div class="mrow R"><span class="nm2">👉 Chữ nhật</span><div class="bar"><i id="barR"></i></div></div>
-        <div class="mrow Z"><span class="nm2">🙌 Hình thang</span><div class="bar"><i id="barZ"></i></div></div>
-        <div class="mrow T"><span class="nm2">🪑 Tam giác</span><div class="bar"><i id="barT"></i></div></div>
+        <div class="mrow l"><span>👈</span><div class="bar"><i id="barL"></i></div></div>
+        <div class="mrow r"><span>👉</span><div class="bar"><i id="barR"></i></div></div>
+        <small style="color:#64748b">Thanh nào dài hơn = bên đó cử động nhiều hơn</small>
       </div>
     </div>
 
@@ -201,27 +175,36 @@
 <canvas id="work" width="160" height="120" style="display:none"></canvas>
 
 <script>
-/* hình cố định ở 4 hướng */
-const SHAPE_DIR={ "vuông":"left", "chữ nhật":"right", "tam giác":"bottom", "thang":"top" };
-const DIR_SLOT={ left:"S", right:"R", bottom:"T", top:"Z" };
+/* màu + svg cho 4 hình */
+const COL={ "vuông":["#f87171","#dc2626"], "chữ nhật":["#60a5fa","#2563eb"], "tam giác":["#fbbf24","#d97706"], "thang":["#c084fc","#9333ea"] };
+function shapeSVG(kind){
+  if(kind==="vuông")    return `<svg width="78" height="62"><rect x="22" y="8" width="44" height="44" fill="#fff" opacity=".95"/></svg>`;
+  if(kind==="chữ nhật") return `<svg width="92" height="62"><rect x="10" y="16" width="72" height="32" fill="#fff" opacity=".95"/></svg>`;
+  if(kind==="tam giác") return `<svg width="78" height="62"><polygon points="39,8 70,54 8,54" fill="#fff" opacity=".95"/></svg>`;
+  if(kind==="thang")    return `<svg width="92" height="62"><polygon points="20,52 72,52 60,12 32,12" fill="#fff" opacity=".95"/></svg>`;
+  return "";
+}
+function choiceHTML(kind){
+  return `${shapeSVG(kind)}<span class="nm">Hình ${kind}</span>`;
+}
 
-/* 10 câu, ans là 1 trong 4 hình */
+/* 10 câu: ans + 1 hình nhiễu */
 const QS=[
-  {q:"Hình có 4 cạnh bằng nhau và 4 góc vuông là hình gì?", ans:"vuông"},
-  {q:"Hình chỉ có 3 cạnh là hình gì?", ans:"tam giác"},
-  {q:"Hình có chiều dài 5 cm, chiều rộng 3 cm là hình gì?", ans:"chữ nhật"},
-  {q:"Hình có 4 cạnh, chỉ có hai cạnh đáy song song với nhau là hình gì?", ans:"thang"},
-  {q:"Hình có chu vi tính bằng cạnh × 4 là hình gì?", ans:"vuông"},
-  {q:"Hình có 4 góc vuông nhưng chiều dài khác chiều rộng là hình gì?", ans:"chữ nhật"},
-  {q:"Biển báo giao thông có 3 góc thường là hình gì?", ans:"tam giác"},
-  {q:"Hình có hai đáy song song nhưng dài – ngắn khác nhau là hình gì?", ans:"thang"},
-  {q:"Mặt bảng đen dài trong lớp thường có dạng hình gì?", ans:"chữ nhật"},
-  {q:"Chiếc khăn mùi xoa gập vuông vức có dạng hình gì?", ans:"vuông"}
+  {q:"Hình có 4 cạnh bằng nhau và 4 góc vuông là hình gì?", ans:"vuông", wrong:"chữ nhật"},
+  {q:"Hình chỉ có 3 cạnh là hình gì?", ans:"tam giác", wrong:"vuông"},
+  {q:"Hình có chiều dài 5 cm, chiều rộng 3 cm là hình gì?", ans:"chữ nhật", wrong:"vuông"},
+  {q:"Hình có 4 cạnh, chỉ hai cạnh đáy song song với nhau là hình gì?", ans:"thang", wrong:"chữ nhật"},
+  {q:"Hình có chu vi tính bằng cạnh × 4 là hình gì?", ans:"vuông", wrong:"chữ nhật"},
+  {q:"Hình có 4 góc vuông nhưng chiều dài khác chiều rộng là hình gì?", ans:"chữ nhật", wrong:"vuông"},
+  {q:"Biển báo giao thông có 3 góc thường là hình gì?", ans:"tam giác", wrong:"thang"},
+  {q:"Hình có hai đáy song song nhưng dài – ngắn khác nhau là hình gì?", ans:"thang", wrong:"chữ nhật"},
+  {q:"Mặt bảng đen dài trong lớp thường có dạng hình gì?", ans:"chữ nhật", wrong:"vuông"},
+  {q:"Chiếc khăn mùi xoa gập vuông vức có dạng hình gì?", ans:"vuông", wrong:"chữ nhật"}
 ];
 
 const TOTAL=10, TIME=7;
-let idx=0,score=0,locked=false,soundOn=true,useCam=false;
-let countdown=null,timeLeft=TIME,cur=null,acc={left:0,right:0,top:0,bottom:0},sampling=false,correctDir=null,order=[];
+let order=[], idx=0, score=0, locked=false, soundOn=true, useCam=false;
+let countdown=null, timeLeft=TIME, cur=null, leftAcc=0, rightAcc=0, sampling=false, correctSide=null;
 
 let actx=null;
 function beep(f,d=.12,t="sine",v=.18){if(!soundOn)return;try{actx=actx||new(window.AudioContext||window.webkitAudioContext)();
@@ -241,7 +224,7 @@ const video=$("video"),work=$("work"),octx=work.getContext('2d',{willReadFrequen
 const CW=160,CH=120;let prev=null,raf=null;
 async function startCamera(){
   if(location.protocol==='file:'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-    showWarn("⚠️ Không mở được camera khi mở trực tiếp file. Hãy chạy bằng <b>start.bat</b>, hoặc chơi bằng chuột/phím."); return false;}
+    showWarn("⚠️ Mở trực tiếp file thì không bật được camera. Hãy mở qua link web, hoặc chơi bằng chuột/phím."); return false;}
   try{const s=await navigator.mediaDevices.getUserMedia({video:{width:320,height:240,facingMode:"user"},audio:false});
     video.srcObject=s;await video.play();useCam=true;$("camOff").style.display="none";loopDetect();return true;}
   catch(e){showWarn("⚠️ Không bật được camera ("+(e.name||e)+"). Chơi bằng chuột/phím nhé.");return false;}
@@ -251,52 +234,56 @@ function loopDetect(){
   if(video.readyState>=2){
     octx.save();octx.translate(CW,0);octx.scale(-1,1);octx.drawImage(video,0,0,CW,CH);octx.restore();
     const img=octx.getImageData(0,0,CW,CH).data;
-    if(prev){
-      let L=0,R=0,T=0,B=0;
+    if(prev){let l=0,r=0;
       for(let y=0;y<CH;y+=2)for(let x=0;x<CW;x+=2){const i=(y*CW+x)*4;
-        if(Math.abs((img[i]+img[i+1]+img[i+2])-(prev[i]+prev[i+1]+prev[i+2]))>70){
-          const dx=x-CW/2,dy=y-CH/2;if(Math.abs(dx)>=Math.abs(dy)){if(dx<0)L++;else R++;}else{if(dy<0)T++;else B++;}}}
-      const tot=Math.max(1,L+R+T+B);
-      $("barS").style.width=Math.min(100,L/tot*100)+"%";$("barR").style.width=Math.min(100,R/tot*100)+"%";
-      $("barZ").style.width=Math.min(100,T/tot*100)+"%";$("barT").style.width=Math.min(100,B/tot*100)+"%";
-      if(sampling){acc.left+=L;acc.right+=R;acc.top+=T;acc.bottom+=B;updateLead();}
+        if(Math.abs((img[i]+img[i+1]+img[i+2])-(prev[i]+prev[i+1]+prev[i+2]))>70){if(x<CW/2)l++;else r++;}}
+      const tot=Math.max(1,l+r);
+      $("barL").style.width=Math.min(100,l/tot*100)+"%";$("barR").style.width=Math.min(100,r/tot*100)+"%";
+      if(sampling){leftAcc+=l;rightAcc+=r;updateLead();}
     }
     prev=img;
   }
   raf=requestAnimationFrame(loopDetect);
 }
 function updateLead(){
-  const tot=Math.max(1,acc.left+acc.right+acc.top+acc.bottom);
-  $("fillS").style.width=Math.min(100,acc.left/tot*100)+"%";$("fillR").style.width=Math.min(100,acc.right/tot*100)+"%";
-  $("fillT").style.width=Math.min(100,acc.bottom/tot*100)+"%";$("fillZ").style.width=Math.min(100,acc.top/tot*100)+"%";
-  let best=null,bv=30;for(const d in DIR_SLOT){if(acc[d]>bv){bv=acc[d];best=d;}}
-  for(const d in DIR_SLOT)$("c"+DIR_SLOT[d]).classList.toggle('lead',d===best);
+  const tot=Math.max(1,leftAcc+rightAcc);
+  $("fillL").style.width=Math.min(100,leftAcc/tot*100)+"%";$("fillR").style.width=Math.min(100,rightAcc/tot*100)+"%";
+  $("choiceL").classList.toggle('lead',leftAcc>rightAcc&&leftAcc>30);
+  $("choiceR").classList.toggle('lead',rightAcc>leftAcc&&rightAcc>30);
 }
 
 function begin(c){if(c){startCamera().then(()=>runStart());}else{useCam=false;runStart();}}
 function runStart(){seed=(seed*7+3)%233280+1;order=shuffle(QS.map((_,i)=>i));idx=0;score=0;renderQ();show('gameScreen');}
 
+function paint(side,kind){
+  const el=$("choice"+(side==='left'?'L':'R'));
+  el.style.background=`linear-gradient(180deg,${COL[kind][0]},${COL[kind][1]})`;
+  $("opt"+(side==='left'?'L':'R')).innerHTML=choiceHTML(kind);
+}
 function renderQ(){
-  clearInterval(countdown);cur=QS[order[idx]];locked=false;acc={left:0,right:0,top:0,bottom:0};sampling=true;
+  clearInterval(countdown);cur=QS[order[idx]];locked=false;leftAcc=0;rightAcc=0;sampling=true;
   $("qTag").textContent="CÂU "+(idx+1);$("qStat").innerHTML=`Câu <b>${idx+1}/${TOTAL}</b>`;$("scoreStat").textContent=score;
   $("question").textContent=cur.q;
-  correctDir=SHAPE_DIR[cur.ans];
-  for(const d in DIR_SLOT){const el=$("c"+DIR_SLOT[d]);el.classList.remove('lead','correct','wrong');}
-  ["S","R","T","Z"].forEach(s=>$("fill"+s).style.width="0%");
+  const correctLeft=rnd()<0.5;
+  paint('left',  correctLeft?cur.ans:cur.wrong);
+  paint('right', correctLeft?cur.wrong:cur.ans);
+  correctSide = correctLeft?'left':'right';
+  ["choiceL","choiceR"].forEach(id=>$(id).classList.remove('lead','correct','wrong'));
+  $("fillL").style.width="0%";$("fillR").style.width="0%";
   $("feedback").textContent="";$("feedback").className="feedback";$("actions").innerHTML="";
   timeLeft=TIME;updateTimer();
   countdown=setInterval(()=>{timeLeft-=0.1;if(timeLeft<=3&&Math.abs(timeLeft-Math.round(timeLeft))<0.05)sndTick();updateTimer();if(timeLeft<=0){clearInterval(countdown);lockAnswer();}},100);
 }
 function updateTimer(){$("timer").textContent="⏱️ "+Math.max(0,Math.ceil(timeLeft));$("timerFill").style.width=Math.max(0,timeLeft/TIME*100)+"%";}
-function manualPick(dir){if(locked)return;clearInterval(countdown);decide(dir);}
-function lockAnswer(){if(locked)return;sampling=false;sndLock();let dir=null;if(useCam){let bv=25;for(const d in DIR_SLOT){if(acc[d]>bv){bv=acc[d];dir=d;}}}decide(dir);}
-function decide(dir){
+function manualPick(side){if(locked)return;clearInterval(countdown);decide(side);}
+function lockAnswer(){if(locked)return;sampling=false;sndLock();let side=null;if(useCam){if(leftAcc<25&&rightAcc<25)side=null;else side=leftAcc>=rightAcc?'left':'right';}decide(side);}
+function decide(side){
   locked=true;sampling=false;
-  $("c"+DIR_SLOT[correctDir]).classList.add('correct');
-  if(dir===correctDir){score++;sndOK();confetti(14);$("feedback").className="feedback ok";$("feedback").textContent="🎉 Nhảy đúng hình rồi! +1 điểm";}
-  else{sndNo();if(dir)$("c"+DIR_SLOT[dir]).classList.add('wrong');
+  $("choice"+(correctSide==='left'?'L':'R')).classList.add('correct');
+  if(side===correctSide){score++;sndOK();confetti(14);$("feedback").className="feedback ok";$("feedback").textContent="🎉 Đúng hình rồi! +1 điểm";}
+  else{sndNo();if(side)$("choice"+(side==='left'?'L':'R')).classList.add('wrong');
     $("feedback").className="feedback no";
-    $("feedback").textContent=(dir?"🤗 Chưa đúng. ":"⏰ Hết giờ! ")+"Đáp án đúng là HÌNH "+cur.ans.toUpperCase()+" (ô sáng vàng).";}
+    $("feedback").textContent=(side?"🤗 Chưa đúng. ":"⏰ Hết giờ! ")+"Đáp án đúng là HÌNH "+cur.ans.toUpperCase()+" (ô sáng vàng).";}
   $("scoreStat").textContent=score;
   const last=idx===TOTAL-1;
   $("actions").innerHTML=`<button class="btn gold" id="nextBtn">${last?'Xem kết quả 🏁':'Câu tiếp theo ▶'}</button>`;
@@ -318,12 +305,9 @@ function burst(){let t=0;const iv=setInterval(()=>{confetti(20);if(++t>4)clearIn
 
 $("camBtn").onclick=()=>begin(true);$("noCamBtn").onclick=()=>begin(false);
 $("replayBtn").onclick=runStart;$("muteBtn").onclick=()=>{soundOn=!soundOn;$("muteBtn").textContent=soundOn?"🔊":"🔇";};
-$("cS").onclick=()=>manualPick('left');$("cR").onclick=()=>manualPick('right');
-$("cT").onclick=()=>manualPick('bottom');$("cZ").onclick=()=>manualPick('top');
-document.addEventListener('keydown',e=>{
-  if(e.key==='ArrowLeft')manualPick('left');if(e.key==='ArrowRight')manualPick('right');
-  if(e.key==='ArrowUp')manualPick('top');if(e.key==='ArrowDown')manualPick('bottom');});
-if(location.protocol==='file:'){showWarn("ℹ️ Đang mở trực tiếp file nên <b>camera sẽ không bật được</b>. Dùng <b>start.bat</b> để bật camera. Vẫn chơi được bằng chuột / phím ←→↑↓.");}
+$("choiceL").onclick=()=>manualPick('left');$("choiceR").onclick=()=>manualPick('right');
+document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')manualPick('left');if(e.key==='ArrowRight')manualPick('right');});
+if(location.protocol==='file:'){showWarn("ℹ️ Đang mở trực tiếp file nên camera sẽ không bật được. Hãy mở qua link web. Vẫn chơi được bằng chuột / phím ←/→.");}
 </script>
 </body>
 </html>
