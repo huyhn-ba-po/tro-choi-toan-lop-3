@@ -57,7 +57,7 @@
   .lane{display:flex;align-items:center;justify-content:space-between;position:relative}
   .flag{font-size:1.8rem}
   .dots{position:absolute;left:40px;right:40px;top:50%;height:4px;background:repeating-linear-gradient(90deg,#fff 0 12px,transparent 12px 24px);transform:translateY(-50%)}
-  .car{font-size:2.2rem;position:absolute;left:40px;top:50%;transform:translate(-50%,-50%);transition:left .6s cubic-bezier(.34,1.56,.64,1);z-index:2}
+  .car{font-size:2.2rem;position:absolute;left:40px;top:50%;transform:translate(-50%,-50%) scaleX(-1);transition:left .6s cubic-bezier(.34,1.56,.64,1);z-index:2}
   .stations{display:flex;justify-content:space-between;margin-top:8px;padding:0 30px}
   .st{width:26px;height:26px;border-radius:50%;background:#047857;border:2px solid #6ee7b7;color:#fff;display:grid;place-items:center;font-weight:800;font-size:.8rem}
   .st.done{background:#fbbf24;color:#7c2d12;border-color:#fde68a}
