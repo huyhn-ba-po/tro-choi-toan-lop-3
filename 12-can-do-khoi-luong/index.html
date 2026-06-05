@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trò Chơi Cân Đo</title>
+
+  <!-- Thư viện Tailwind CSS để làm đẹp giao diện -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Thư viện React -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- CÁC DỮ LIỆU CỐ ĐỊNH ---
+    const AVAILABLE_WEIGHTS = [
+      { id: '1kg', value: 1000, label: '1 kg', color: 'bg-red-500', size: 'w-14 h-16', text: 'text-lg' },
+      { id: '500g', value: 500, label: '500g', color: 'bg-orange-500', size: 'w-12 h-14', text: 'text-md' },
+      { id: '300g', value: 300, label: '300g', color: 'bg-amber-500', size: 'w-11 h-12', text: 'text-sm' },
+      { id: '200g', value: 200, label: '200g', color: 'bg-green-500', size: 'w-10 h-10', text: 'text-sm' },
+      { id: '100g', value: 100, label: '100g', color: 'bg-teal-500', size: 'w-9 h-9', text: 'text-xs' },
+      { id: '50g', value: 50, label: '50g', color: 'bg-blue-500', size: 'w-8 h-8', text: 'text-xs' },
+      { id: '30g', value: 30, label: '30g', color: 'bg-indigo-500', size: 'w-7 h-7', text: 'text-[10px]' },
+      { id: '20g', value: 20, label: '20g', color: 'bg-purple-500', size: 'w-6 h-6', text: 'text-[9px]' },
+    ];
+
+    const LEVELS = [
+      { id: 1, name: 'Quả Dứa', emoji: '🍍', weight: 1300 },
+      { id: 2, name: 'Quả Táo', emoji: '🍎', weight: 250 },
+      { id: 3, name: 'Quả Dưa Hấu', emoji: '🍉', weight: 2550 },
+      { id: 4, name: 'Nải Chuối', emoji: '🍌', weight: 850 },
+      { id: 5, name: 'Quả Xoài', emoji: '🥭', weight: 420 },
+    ];
+
+    // --- HÀM TIỆN ÍCH ---
+    const formatWeight = (grams) => {
+      if (grams === 0) return '0 g';
+      const kg = Math.floor(grams / 1000);
+      const g = grams % 1000;
+      let result = '';
+      if (kg > 0) result += `${kg} kg `;
+      if (g > 0) result += `${g} g`;
+      return result.trim();
+    };
+
+    function App() {
+      const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
+      const [leftWeights, setLeftWeights] = useState([]); // Mảng chứa các object quả cân đã đặt
+      const [showSuccess, setShowSuccess] = useState(false);
+
+      // --- ÂM THANH (AUDIO) ---
+      const [isMusicOn, setIsMusicOn] = useState(false);
+      const bgmRef = React.useRef(null);
+      const popSoundRef = React.useRef(null);
+      const successSoundRef = React.useRef(null);
+
+      useEffect(() => {
+        // Khởi tạo nhạc nền (Có thể thay link .mp3 khác nếu muốn)
+        bgmRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=ukulele-song-120066.mp3');
+        bgmRef.current.loop = true;
+        bgmRef.current.volume = 0.2; // Âm lượng nhỏ vừa phải
+
+        // Khởi tạo hiệu ứng thả quả cân
+        popSoundRef.current = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg');
+        popSoundRef.current.volume = 0.8;
+
+        // Khởi tạo hiệu ứng chúc mừng
+        successSoundRef.current = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_success_fanfare.ogg');
+        successSoundRef.current.volume = 0.6;
+
+        // Dọn dẹp khi thoát
+        return () => {
+          if (bgmRef.current) bgmRef.current.pause();
+        }
+      }, []);
+
+      const toggleMusic = () => {
+        if (!bgmRef.current) return;
+        if (isMusicOn) {
+          bgmRef.current.pause();
+        } else {
+          // Trình duyệt yêu cầu phải tương tác mới được phát nhạc
+          bgmRef.current.play().catch(e => console.log("Lỗi phát nhạc:", e));
+        }
+        setIsMusicOn(!isMusicOn);
+      };
+
+      const playPopSound = () => {
+        if (popSoundRef.current) {
+          popSoundRef.current.currentTime = 0; // Trả về đầu file để phát liên tục được
+          popSoundRef.current.play().catch(() => {});
+        }
+      };
+
+      const currentLevel = LEVELS[currentLevelIndex];
+
+      // Tính tổng trọng lượng đĩa trái
+      const totalLeftWeight = leftWeights.reduce((sum, item) => sum + item.value, 0);
+      const targetWeight = currentLevel.weight;
+
+      // Tính toán góc nghiêng của cân
+      const maxAngle = 20;
+      const weightDifference = totalLeftWeight - targetWeight;
+      const maxWeight = Math.max(totalLeftWeight, targetWeight, 1);
+
+      // Đã chỉnh sửa chiều quay đòn bẩy: Trái nặng thì hạ trái, Phải nặng thì hạ phải
+      let angle = -(weightDifference / maxWeight) * maxAngle;
+      angle = Math.max(-maxAngle, Math.min(maxAngle, angle));
+
+      const isBalanced = totalLeftWeight === targetWeight;
+
+      useEffect(() => {
+        if (isBalanced && targetWeight > 0) {
+          // Phát nhạc chúc mừng khi cân bằng
+          if (successSoundRef.current) {
+             successSoundRef.current.currentTime = 0;
+             successSoundRef.current.play().catch(() => {});
+          }
+          setTimeout(() => setShowSuccess(true), 800);
+        } else {
+          setShowSuccess(false);
+        }
+      }, [isBalanced, targetWeight]);
+
+      const handleAddWeight = (weightValue) => {
+        if (isBalanced) return;
+        const weightObj = AVAILABLE_WEIGHTS.find(w => w.value === weightValue);
+        if (weightObj) {
+          setLeftWeights([...leftWeights, { ...weightObj, uniqueId: Math.random() }]);
+          playPopSound(); // Chạy âm thanh
+        }
+      };
+
+      const handleRemoveWeight = (uniqueId) => {
+        setLeftWeights(leftWeights.filter(w => w.uniqueId !== uniqueId));
+        playPopSound(); // Chạy âm thanh
+      };
+
+      const handleDragStart = (e, weightValue) => {
+        e.dataTransfer.setData('weightValue', weightValue);
+      };
+
+      const handleDropOnLeftPan = (e) => {
+        e.preventDefault();
+        const val = parseInt(e.dataTransfer.getData('weightValue'), 10);
+        if (val) handleAddWeight(val);
+      };
+
+      const handleDragOver = (e) => {
+        e.preventDefault();
+      };
+
+      const resetLevel = () => {
+        setLeftWeights([]);
+        setShowSuccess(false);
+      };
+
+      const nextLevel = () => {
+        setLeftWeights([]);
+        setShowSuccess(false);
+        setCurrentLevelIndex((prev) => (prev + 1) % LEVELS.length);
+      };
+
+      // Component Quả Cân
+      const WeightItem = ({ weight, onClick, isDraggable, className = '' }) => (
+        <div
+          draggable={isDraggable && !isBalanced}
+          onDragStart={(e) => handleDragStart(e, weight.value)}
+          onClick={onClick}
+          className={`relative flex flex-col items-center justify-end flex-shrink-0
+                     ${isDraggable && !isBalanced ? 'cursor-grab active:cursor-grabbing hover:-translate-y-2' : 'cursor-pointer hover:scale-105'}
+                     transition-transform rounded-b-md shadow-md border border-black/20 ${weight.color} ${weight.size} ${className}`}
+        >
+          <div className="absolute -top-1.5 w-1/3 h-1.5 bg-black/30 rounded-t-sm"></div>
+          <span className={`text-white font-bold drop-shadow-md pb-0.5 ${weight.text}`}>
+            {weight.label}
+          </span>
+        </div>
+      );
+
+      return (
+        <div className="min-h-screen bg-sky-100 p-4 font-sans flex flex-col items-center">
+          {/* Header */}
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 mb-8 mt-4 text-center border-4 border-amber-200 relative">
+
+            {/* Nút bật/tắt nhạc góc phải trên của Header */}
+            <button
+              onClick={toggleMusic}
+              className="absolute top-4 right-4 md:top-6 md:right-6 w-12 h-12 flex items-center justify-center bg-pink-100 hover:bg-pink-200 text-pink-600 rounded-full transition-all shadow-md text-2xl border-2 border-pink-300"
+              title={isMusicOn ? "Tắt nhạc nền" : "Bật nhạc nền"}
+            >
+              {isMusicOn ? '🔊' : '🔇'}
+            </button>
+
+            <h1 className="text-3xl md:text-4xl font-extrabold text-amber-600 mb-2">Trò Chơi Cân Đo</h1>
+            <p className="text-lg text-gray-600 font-medium">
+              Kéo thả (hoặc nhấp) các quả cân vào đĩa bên <span className="text-blue-500 font-bold">trái</span> để tìm ra khối lượng của <span className="text-red-500 font-bold">{currentLevel.name}</span> nhé!
+            </p>
+          </div>
+
+          {/* Main Game Area */}
+          <div className="w-full max-w-4xl relative mb-12">
+            <div className="flex justify-between w-full px-4 md:px-16 mb-8">
+              <div className="bg-blue-100 border-2 border-blue-400 p-3 rounded-xl shadow-sm text-center min-w-[150px]">
+                <p className="text-blue-800 font-bold">Đĩa Trái</p>
+                <p className="text-2xl font-black text-blue-600">{formatWeight(totalLeftWeight)}</p>
+              </div>
+              <div className="bg-red-100 border-2 border-red-400 p-3 rounded-xl shadow-sm text-center min-w-[150px]">
+                <p className="text-red-800 font-bold">Đĩa Phải ({currentLevel.name})</p>
+                <p className="text-2xl font-black text-red-600">?</p>
+              </div>
+            </div>
+
+            <div className="relative w-full h-[320px] flex justify-center items-end mt-10">
+              {/* Trụ cân */}
+              <div className="absolute bottom-0 w-0 h-0
+                              border-l-[50px] border-l-transparent
+                              border-r-[50px] border-r-transparent
+                              border-b-[160px] border-b-amber-800 z-10">
+              </div>
+              <div className="absolute bottom-0 w-8 h-[160px] bg-amber-900 z-10"></div>
+
+              {/* Trục ngang */}
+              <div className="absolute bottom-[145px] w-full max-w-2xl flex justify-center z-20">
+                <div
+                  className="w-[90%] md:w-[80%] h-4 bg-amber-600 rounded-full flex justify-between items-center transition-transform duration-700 ease-in-out shadow-lg"
+                  style={{ transform: `rotate(${angle}deg)`, transformOrigin: 'center center' }}
+                >
+                  {/* ĐĨA CÂN BÊN TRÁI */}
+                  <div className="relative w-1 h-1">
+                    <div
+                      className="absolute top-0 -left-[80px] w-[160px] flex flex-col items-center transition-transform duration-700 ease-in-out origin-top"
+                      style={{ transform: `rotate(${-angle}deg)` }}
+                    >
+                      <svg width="160" height="120" className="opacity-80 drop-shadow-sm">
+                        <line x1="80" y1="0" x2="20" y2="120" stroke="#4b5563" strokeWidth="3" />
+                        <line x1="80" y1="0" x2="140" y2="120" stroke="#4b5563" strokeWidth="3" />
+                        <circle cx="80" cy="0" r="4" fill="#4b5563" />
+                      </svg>
+
+                      <div
+                        className={`w-[160px] bg-gradient-to-b from-gray-200 to-gray-400 border-t-4 border-gray-500 rounded-b-full shadow-2xl flex flex-wrap-reverse justify-center content-start pb-4 pt-1 px-4 gap-1 min-h-[50px]
+                                  ${!isBalanced ? 'hover:bg-blue-50 transition-colors' : ''}`}
+                        onDrop={handleDropOnLeftPan}
+                        onDragOver={handleDragOver}
+                      >
+                        {leftWeights.length === 0 && (
+                          <span className="text-gray-400 text-sm font-medium mt-2">Thả vào đây</span>
+                        )}
+                        {leftWeights.map((w) => (
+                          <WeightItem
+                            key={w.uniqueId}
+                            weight={w}
+                            onClick={() => handleRemoveWeight(w.uniqueId)}
+                            className="scale-75 -mx-1"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Chốt giữa */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-yellow-400 rounded-full border-4 border-amber-900 shadow-sm z-30"></div>
+
+                  {/* ĐĨA CÂN BÊN PHẢI */}
+                  <div className="relative w-1 h-1">
+                    <div
+                      className="absolute top-0 -left-[80px] w-[160px] flex flex-col items-center transition-transform duration-700 ease-in-out origin-top"
+                      style={{ transform: `rotate(${-angle}deg)` }}
+                    >
+                      <svg width="160" height="120" className="opacity-80 drop-shadow-sm">
+                        <line x1="80" y1="0" x2="20" y2="120" stroke="#4b5563" strokeWidth="3" />
+                        <line x1="80" y1="0" x2="140" y2="120" stroke="#4b5563" strokeWidth="3" />
+                        <circle cx="80" cy="0" r="4" fill="#4b5563" />
+                      </svg>
+
+                      <div className="w-[160px] bg-gradient-to-b from-gray-200 to-gray-400 border-t-4 border-gray-500 rounded-b-full shadow-2xl flex justify-center items-end pb-2 h-[50px] relative">
+                        <div className="absolute bottom-2 text-7xl drop-shadow-xl select-none" style={{ filter: 'drop-shadow(0px 10px 8px rgba(0,0,0,0.3))' }}>
+                          {currentLevel.emoji}
+                        </div>
+                        <div className="absolute -bottom-8 bg-white px-3 py-1 rounded-full text-sm font-bold border-2 border-red-400 text-red-600 shadow-md whitespace-nowrap">
+                          {formatWeight(currentLevel.weight)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tủ chứa Quả Cân */}
+          <div className="w-full max-w-4xl bg-white/80 backdrop-blur rounded-2xl shadow-lg p-6 border-2 border-white/50 relative z-10">
+            <h2 className="text-xl font-bold text-gray-700 mb-4 text-center">Tủ Quả Cân (Chọn hoặc Kéo Thả)</h2>
+            <div className="flex flex-wrap justify-center items-end gap-3 md:gap-6 min-h-[80px]">
+              {AVAILABLE_WEIGHTS.map((weight) => (
+                <WeightItem
+                  key={weight.id}
+                  weight={weight}
+                  isDraggable={true}
+                  onClick={() => handleAddWeight(weight.value)}
+                />
+              ))}
+            </div>
+            <div className="flex justify-center mt-6 gap-4">
+               <button
+                 onClick={resetLevel}
+                 className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full transition-colors shadow-sm"
+               >
+                 Làm Lại Đĩa Trái
+               </button>
+            </div>
+          </div>
+
+          {/* Popup Báo Hiệu Cân Bằng Thành Công */}
+          {showSuccess && (
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+              <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl animate-bounce transform transition-all">
+                <div className="text-7xl mb-4">🎉</div>
+                <h2 className="text-4xl font-extrabold text-green-500 mb-2 drop-shadow-sm">Đã cân bằng!</h2>
+                <p className="text-xl text-gray-600 mb-6">
+                  Bạn giỏi quá! {currentLevel.name} nặng chính xác là <span className="font-bold text-blue-600">{formatWeight(targetWeight)}</span>.
+                </p>
+                <button
+                  onClick={nextLevel}
+                  className="w-full py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white text-xl font-bold rounded-2xl shadow-lg transform hover:scale-105 transition-all"
+                >
+                  Chơi Mức Tiếp Theo ➔
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
