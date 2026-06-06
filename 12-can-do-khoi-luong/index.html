@@ -52,30 +52,35 @@
 
     function App() {
       const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
-      const [leftWeights, setLeftWeights] = useState([]); // Mảng chứa các object quả cân đã đặt
+      const [leftWeights, setLeftWeights] = useState([]);
       const [showSuccess, setShowSuccess] = useState(false);
+
+      // State cho ô nhập kết quả
+      const [inputKg, setInputKg] = useState('');
+      const [inputG, setInputG] = useState('');
+      const [feedbackMsg, setFeedbackMsg] = useState('');
 
       // --- ÂM THANH (AUDIO) ---
       const [isMusicOn, setIsMusicOn] = useState(false);
       const bgmRef = React.useRef(null);
       const popSoundRef = React.useRef(null);
       const successSoundRef = React.useRef(null);
+      const errorSoundRef = React.useRef(null);
 
       useEffect(() => {
-        // Khởi tạo nhạc nền (Có thể thay link .mp3 khác nếu muốn)
         bgmRef.current = new Audio('https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=ukulele-song-120066.mp3');
         bgmRef.current.loop = true;
-        bgmRef.current.volume = 0.2; // Âm lượng nhỏ vừa phải
+        bgmRef.current.volume = 0.2;
 
-        // Khởi tạo hiệu ứng thả quả cân
         popSoundRef.current = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg');
         popSoundRef.current.volume = 0.8;
 
-        // Khởi tạo hiệu ứng chúc mừng
         successSoundRef.current = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_success_fanfare.ogg');
         successSoundRef.current.volume = 0.6;
 
-        // Dọn dẹp khi thoát
+        errorSoundRef.current = new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg');
+        errorSoundRef.current.volume = 0.5;
+
         return () => {
           if (bgmRef.current) bgmRef.current.pause();
         }
@@ -86,7 +91,6 @@
         if (isMusicOn) {
           bgmRef.current.pause();
         } else {
-          // Trình duyệt yêu cầu phải tương tác mới được phát nhạc
           bgmRef.current.play().catch(e => console.log("Lỗi phát nhạc:", e));
         }
         setIsMusicOn(!isMusicOn);
@@ -94,53 +98,57 @@
 
       const playPopSound = () => {
         if (popSoundRef.current) {
-          popSoundRef.current.currentTime = 0; // Trả về đầu file để phát liên tục được
+          popSoundRef.current.currentTime = 0;
           popSoundRef.current.play().catch(() => {});
         }
       };
 
       const currentLevel = LEVELS[currentLevelIndex];
-
-      // Tính tổng trọng lượng đĩa trái
       const totalLeftWeight = leftWeights.reduce((sum, item) => sum + item.value, 0);
       const targetWeight = currentLevel.weight;
 
-      // Tính toán góc nghiêng của cân
       const maxAngle = 20;
       const weightDifference = totalLeftWeight - targetWeight;
       const maxWeight = Math.max(totalLeftWeight, targetWeight, 1);
 
-      // Đã chỉnh sửa chiều quay đòn bẩy: Trái nặng thì hạ trái, Phải nặng thì hạ phải
       let angle = -(weightDifference / maxWeight) * maxAngle;
       angle = Math.max(-maxAngle, Math.min(maxAngle, angle));
 
-      const isBalanced = totalLeftWeight === targetWeight;
+      // Xử lý kiểm tra kết quả học sinh nhập
+      const handleCheckAnswer = () => {
+        const kg = parseInt(inputKg || 0, 10);
+        const g = parseInt(inputG || 0, 10);
+        const totalGuess = kg * 1000 + g;
 
-      useEffect(() => {
-        if (isBalanced && targetWeight > 0) {
-          // Phát nhạc chúc mừng khi cân bằng
+        if (totalGuess === targetWeight) {
+          setFeedbackMsg('');
           if (successSoundRef.current) {
              successSoundRef.current.currentTime = 0;
              successSoundRef.current.play().catch(() => {});
           }
-          setTimeout(() => setShowSuccess(true), 800);
+          setShowSuccess(true);
         } else {
-          setShowSuccess(false);
+          if (errorSoundRef.current) {
+             errorSoundRef.current.currentTime = 0;
+             errorSoundRef.current.play().catch(() => {});
+          }
+          setFeedbackMsg('Chưa đúng rồi! Em hãy đặt cân cho thăng bằng rồi cộng lại cẩn thận nhé!');
         }
-      }, [isBalanced, targetWeight]);
+      };
 
       const handleAddWeight = (weightValue) => {
-        if (isBalanced) return;
+        if (showSuccess) return; // Nếu đã thắng thì khóa không cho thêm
         const weightObj = AVAILABLE_WEIGHTS.find(w => w.value === weightValue);
         if (weightObj) {
           setLeftWeights([...leftWeights, { ...weightObj, uniqueId: Math.random() }]);
-          playPopSound(); // Chạy âm thanh
+          playPopSound();
         }
       };
 
       const handleRemoveWeight = (uniqueId) => {
+        if (showSuccess) return;
         setLeftWeights(leftWeights.filter(w => w.uniqueId !== uniqueId));
-        playPopSound(); // Chạy âm thanh
+        playPopSound();
       };
 
       const handleDragStart = (e, weightValue) => {
@@ -159,23 +167,24 @@
 
       const resetLevel = () => {
         setLeftWeights([]);
+        setInputKg('');
+        setInputG('');
+        setFeedbackMsg('');
         setShowSuccess(false);
       };
 
       const nextLevel = () => {
-        setLeftWeights([]);
-        setShowSuccess(false);
+        resetLevel();
         setCurrentLevelIndex((prev) => (prev + 1) % LEVELS.length);
       };
 
-      // Component Quả Cân
       const WeightItem = ({ weight, onClick, isDraggable, className = '' }) => (
         <div
-          draggable={isDraggable && !isBalanced}
+          draggable={isDraggable && !showSuccess}
           onDragStart={(e) => handleDragStart(e, weight.value)}
           onClick={onClick}
           className={`relative flex flex-col items-center justify-end flex-shrink-0
-                     ${isDraggable && !isBalanced ? 'cursor-grab active:cursor-grabbing hover:-translate-y-2' : 'cursor-pointer hover:scale-105'}
+                     ${isDraggable && !showSuccess ? 'cursor-grab active:cursor-grabbing hover:-translate-y-2' : 'cursor-pointer hover:scale-105'}
                      transition-transform rounded-b-md shadow-md border border-black/20 ${weight.color} ${weight.size} ${className}`}
         >
           <div className="absolute -top-1.5 w-1/3 h-1.5 bg-black/30 rounded-t-sm"></div>
@@ -186,11 +195,9 @@
       );
 
       return (
-        <div className="min-h-screen bg-sky-100 p-4 font-sans flex flex-col items-center">
+        <div className="min-h-screen bg-sky-100 p-4 font-sans flex flex-col items-center pb-20">
           {/* Header */}
-          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 mb-8 mt-4 text-center border-4 border-amber-200 relative">
-
-            {/* Nút bật/tắt nhạc góc phải trên của Header */}
+          <div className="w-full max-w-4xl bg-white rounded-2xl shadow-xl p-6 mb-6 mt-4 text-center border-4 border-amber-200 relative">
             <button
               onClick={toggleMusic}
               className="absolute top-4 right-4 md:top-6 md:right-6 w-12 h-12 flex items-center justify-center bg-pink-100 hover:bg-pink-200 text-pink-600 rounded-full transition-all shadow-md text-2xl border-2 border-pink-300"
@@ -201,20 +208,20 @@
 
             <h1 className="text-3xl md:text-4xl font-extrabold text-amber-600 mb-2">Trò Chơi Cân Đo</h1>
             <p className="text-lg text-gray-600 font-medium">
-              Kéo thả (hoặc nhấp) các quả cân vào đĩa bên <span className="text-blue-500 font-bold">trái</span> để tìm ra khối lượng của <span className="text-red-500 font-bold">{currentLevel.name}</span> nhé!
+              Hãy giúp đĩa cân thăng bằng, sau đó cộng các quả cân để tìm ra khối lượng của <span className="text-red-500 font-bold">{currentLevel.name}</span> nhé!
             </p>
           </div>
 
           {/* Main Game Area */}
-          <div className="w-full max-w-4xl relative mb-12">
-            <div className="flex justify-between w-full px-4 md:px-16 mb-8">
-              <div className="bg-blue-100 border-2 border-blue-400 p-3 rounded-xl shadow-sm text-center min-w-[150px]">
+          <div className="w-full max-w-4xl relative mb-6">
+            <div className="flex justify-between w-full px-4 md:px-16 mb-4">
+              <div className="bg-blue-100 border-2 border-blue-400 p-3 rounded-xl shadow-sm text-center min-w-[120px]">
                 <p className="text-blue-800 font-bold">Đĩa Trái</p>
-                <p className="text-2xl font-black text-blue-600">{formatWeight(totalLeftWeight)}</p>
+                <p className="text-3xl font-black text-blue-600">?</p>
               </div>
-              <div className="bg-red-100 border-2 border-red-400 p-3 rounded-xl shadow-sm text-center min-w-[150px]">
+              <div className="bg-red-100 border-2 border-red-400 p-3 rounded-xl shadow-sm text-center min-w-[120px]">
                 <p className="text-red-800 font-bold">Đĩa Phải ({currentLevel.name})</p>
-                <p className="text-2xl font-black text-red-600">?</p>
+                <p className="text-3xl font-black text-red-600">?</p>
               </div>
             </div>
 
@@ -247,7 +254,7 @@
 
                       <div
                         className={`w-[160px] bg-gradient-to-b from-gray-200 to-gray-400 border-t-4 border-gray-500 rounded-b-full shadow-2xl flex flex-wrap-reverse justify-center content-start pb-4 pt-1 px-4 gap-1 min-h-[50px]
-                                  ${!isBalanced ? 'hover:bg-blue-50 transition-colors' : ''}`}
+                                  ${!showSuccess ? 'hover:bg-blue-50 transition-colors' : ''}`}
                         onDrop={handleDropOnLeftPan}
                         onDragOver={handleDragOver}
                       >
@@ -285,8 +292,8 @@
                         <div className="absolute bottom-2 text-7xl drop-shadow-xl select-none" style={{ filter: 'drop-shadow(0px 10px 8px rgba(0,0,0,0.3))' }}>
                           {currentLevel.emoji}
                         </div>
-                        <div className="absolute -bottom-8 bg-white px-3 py-1 rounded-full text-sm font-bold border-2 border-red-400 text-red-600 shadow-md whitespace-nowrap">
-                          {formatWeight(currentLevel.weight)}
+                        <div className="absolute -bottom-8 bg-white px-4 py-1 rounded-full text-lg font-bold border-2 border-red-400 text-red-600 shadow-md whitespace-nowrap">
+                          ?
                         </div>
                       </div>
                     </div>
@@ -295,6 +302,46 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Ô Nhập Kết Quả */}
+          <div className="w-full max-w-4xl bg-white/95 backdrop-blur rounded-2xl shadow-xl p-6 mb-8 border-4 border-green-400 text-center relative z-10">
+            <h2 className="text-xl md:text-2xl font-bold text-green-700 mb-4">Kết quả đo của em là:</h2>
+            <div className="flex justify-center items-center gap-2 md:gap-4 text-lg md:text-xl font-bold text-gray-700">
+              <input
+                type="number"
+                min="0"
+                value={inputKg}
+                onChange={e => setInputKg(e.target.value)}
+                className="w-16 md:w-20 p-2 border-2 border-gray-400 rounded-lg text-center focus:border-green-500 focus:outline-none"
+                placeholder="0"
+                disabled={showSuccess}
+              />
+              <span>kg</span>
+              <span className="w-2"></span>
+              <input
+                type="number"
+                min="0"
+                value={inputG}
+                onChange={e => setInputG(e.target.value)}
+                className="w-20 md:w-24 p-2 border-2 border-gray-400 rounded-lg text-center focus:border-green-500 focus:outline-none"
+                placeholder="0"
+                disabled={showSuccess}
+              />
+              <span>g</span>
+            </div>
+
+            <button
+              onClick={handleCheckAnswer}
+              disabled={showSuccess}
+              className={`mt-6 px-8 py-3 font-bold rounded-full shadow-md text-xl transition-transform ${showSuccess ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white transform hover:scale-105'}`}
+            >
+              Kiểm Tra
+            </button>
+
+            {feedbackMsg && (
+              <p className="mt-4 text-red-500 font-bold text-lg animate-pulse bg-red-50 py-2 rounded-lg">{feedbackMsg}</p>
+            )}
           </div>
 
           {/* Tủ chứa Quả Cân */}
@@ -312,28 +359,31 @@
             </div>
             <div className="flex justify-center mt-6 gap-4">
                <button
-                 onClick={resetLevel}
+                 onClick={() => {
+                   setLeftWeights([]);
+                   playPopSound();
+                 }}
                  className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold rounded-full transition-colors shadow-sm"
                >
-                 Làm Lại Đĩa Trái
+                 Dọn Trống Đĩa Trái
                </button>
             </div>
           </div>
 
           {/* Popup Báo Hiệu Cân Bằng Thành Công */}
           {showSuccess && (
-            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center p-4">
-              <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl animate-bounce transform transition-all">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex justify-center items-center p-4">
+              <div className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl animate-bounce transform transition-all border-4 border-green-400">
                 <div className="text-7xl mb-4">🎉</div>
-                <h2 className="text-4xl font-extrabold text-green-500 mb-2 drop-shadow-sm">Đã cân bằng!</h2>
+                <h2 className="text-4xl font-extrabold text-green-500 mb-2 drop-shadow-sm">Chính xác!</h2>
                 <p className="text-xl text-gray-600 mb-6">
-                  Bạn giỏi quá! {currentLevel.name} nặng chính xác là <span className="font-bold text-blue-600">{formatWeight(targetWeight)}</span>.
+                  Bạn tính giỏi quá! <span className="font-bold text-red-500">{currentLevel.name}</span> nặng đúng <span className="font-bold text-blue-600">{formatWeight(targetWeight)}</span>.
                 </p>
                 <button
                   onClick={nextLevel}
                   className="w-full py-4 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white text-xl font-bold rounded-2xl shadow-lg transform hover:scale-105 transition-all"
                 >
-                  Chơi Mức Tiếp Theo ➔
+                  Đo Loại Quả Khác ➔
                 </button>
               </div>
             </div>
