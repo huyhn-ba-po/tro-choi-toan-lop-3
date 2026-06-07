@@ -12,6 +12,18 @@
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Chặn cuộn ngang khi đòn cân hơi rộng */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    /* Trên màn hình nhỏ (máy tính bảng dọc / điện thoại) thu nhỏ chiếc cân cho vừa */
+    @media (max-width: 768px) {
+      #scaleZone { transform: scale(0.82); transform-origin: top center; }
+    }
+    @media (max-width: 480px) {
+      #scaleZone { transform: scale(0.62); transform-origin: top center; }
+    }
+  </style>
 </head>
 <body>
   <div id="root"></div>
@@ -107,7 +119,7 @@
       const totalLeftWeight = leftWeights.reduce((sum, item) => sum + item.value, 0);
       const targetWeight = currentLevel.weight;
 
-      const maxAngle = 20;
+      const maxAngle = 10;
       const weightDifference = totalLeftWeight - targetWeight;
       const maxWeight = Math.max(totalLeftWeight, targetWeight, 1);
 
@@ -225,19 +237,19 @@
               </div>
             </div>
 
-            <div className="relative w-full h-[320px] flex justify-center items-end mt-10">
+            <div id="scaleZone" className="relative w-full h-[340px] flex justify-center items-end mt-6 overflow-hidden">
               {/* Trụ cân */}
               <div className="absolute bottom-0 w-0 h-0
                               border-l-[50px] border-l-transparent
                               border-r-[50px] border-r-transparent
-                              border-b-[160px] border-b-amber-800 z-10">
+                              border-b-[215px] border-b-amber-800 z-10">
               </div>
-              <div className="absolute bottom-0 w-8 h-[160px] bg-amber-900 z-10"></div>
+              <div className="absolute bottom-0 w-8 h-[215px] bg-amber-900 z-10"></div>
 
               {/* Trục ngang */}
-              <div className="absolute bottom-[145px] w-full max-w-2xl flex justify-center z-20">
+              <div className="absolute bottom-[215px] w-full max-w-xl flex justify-center z-20">
                 <div
-                  className="w-[90%] md:w-[80%] h-4 bg-amber-600 rounded-full flex justify-between items-center transition-transform duration-700 ease-in-out shadow-lg"
+                  className="w-[85%] md:w-[70%] h-4 bg-amber-600 rounded-full flex justify-between items-center transition-transform duration-700 ease-in-out shadow-lg"
                   style={{ transform: `rotate(${angle}deg)`, transformOrigin: 'center center' }}
                 >
                   {/* ĐĨA CÂN BÊN TRÁI */}
